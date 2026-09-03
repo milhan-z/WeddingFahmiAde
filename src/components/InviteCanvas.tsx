@@ -1,23 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { couple, event, gift, closing } from "@/lib/data";
+import type { Wish } from "@/app/api/wishes/route";
 
 /**
- * Port dari Figma Make export (frame "Bagian Awal" + "Layout Web").
- *
- * Desain dikunci pada lebar 1080px lalu DISKALA secara seragam:
- * - Cover  : diskala agar MUAT PENUH layar (min lebar/tinggi) — tanpa scroll.
- * - Story  : diskala ke lebar wadah — satu kanvas menerus, tidak terpotong
- *            per-bagian.
- * Seluruh aset & teks berada di koordinat absolut persis seperti Figma;
- * teks placeholder ("Fahmi" ganda) sudah diperbaiki memakai data asli.
+ * Undangan sebagai KANVAS berskala (port Figma Make export "Bagian Awal" +
+ * "Layout Web"). Lebar desain dikunci 1080px lalu diskala seragam:
+ * - Cover : diskala MAX → mengisi penuh layar, tanpa bilah putih.
+ * - Story : diskala ke lebar wadah → satu kanvas menerus (tidak terpotong
+ *   per-bagian). Bagian atas (header, video, Bride & Groom) memakai posisi
+ *   persis Figma; bagian bawah diisi konten & fitur dari referensi undangan
+ *   (Wedding Event, Gift, RSVP, Best Wishes) — tanpa bagian cerita.
  */
 const DESIGN_W = 1080;
 const COVER_H = 2210;
-const STORY_H = 19320;
-const A = "/figma"; // folder aset hasil export
+const A = "/figma";
+const SKY = "#7bd4ff";
+const CYAN = "#adfffe";
 
-/* ────────────────────────── COVER (Bagian Awal) ────────────────────────── */
+const img = (src: string) => (
+  <img alt="" src={`${A}/${src}`} className="absolute inset-0 size-full max-w-none object-cover pointer-events-none" />
+);
+
+/* ══════════════════════════ COVER ══════════════════════════ */
 
 function CoverArt({ guestName }: { guestName: string }) {
   return (
@@ -35,56 +41,23 @@ function CoverArt({ guestName }: { guestName: string }) {
       <div className="absolute left-[129px] size-[828px] top-0">
         <img alt="The Wedding of Ade & Fahmi" src={`${A}/cover-title.webp`} className="absolute inset-0 size-full max-w-none object-cover" />
       </div>
-
-      {/* nama tamu — tidak ada di export, ditambah supaya link personal tetap
-          tampil; diberi panel semitransparan agar terbaca di atas gaun */}
       <div className="absolute left-1/2 top-[1360px] w-[760px] -translate-x-1/2 rounded-[60px] bg-white/55 px-10 py-7 text-center backdrop-blur-[2px]">
         <p className="font-serif text-[28px] uppercase tracking-[0.3em] text-[#5c1f2e]/75">Kepada Yth.</p>
-        <p className="mt-1 font-serif text-[50px] font-semibold leading-tight text-[#5c1f2e]">
-          {guestName || "Tamu Undangan"}
-        </p>
+        <p className="mt-1 font-serif text-[50px] font-semibold leading-tight text-[#5c1f2e]">{guestName || "Tamu Undangan"}</p>
       </div>
     </div>
   );
 }
 
-/* ────────────────────────── STORY (Layout Web) ────────────────────────── */
+/* ══════════════════════════ STORY: bagian atas (Figma) ══════════════════════════ */
+const TOP_H = 7125;
 
-function Instagram({ top, href }: { top: number; href?: string }) {
-  const cls =
-    "absolute left-[418px] flex items-center justify-center rounded-[33px] bg-black px-[35.5px] py-[7.6px] text-[34.9px] font-bold text-white";
-  const label = <span className="whitespace-nowrap">Instagram</span>;
-  return href ? (
-    <a className={cls} style={{ top }} href={href} target="_blank" rel="noopener noreferrer">
-      {label}
-    </a>
-  ) : (
-    <div className={cls} style={{ top }}>
-      {label}
-    </div>
-  );
-}
-
-function StoryArt({
-  onPlayVideo,
-  groomIg,
-  brideIg,
-}: {
-  onPlayVideo?: () => void;
-  groomIg?: string;
-  brideIg?: string;
-}) {
-  const img = (src: string) =>
-    (<img alt="" src={`${A}/${src}`} className="absolute inset-0 size-full max-w-none object-cover pointer-events-none" />);
-
+function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) {
   return (
-    <div className="relative size-full bg-white text-black">
-      {/* zona warna */}
-      <div className="absolute left-px top-0 h-[2021px] w-[1079px] bg-[#7bd4ff]" />
-      <div className="absolute left-px top-[3073px] h-[7391px] w-[1079px] bg-[#adfffe]" />
-      {/* kartu putih arch */}
+    <div className="relative w-[1080px]" style={{ height: TOP_H }}>
+      <div className="absolute left-0 top-0 h-[2021px] w-[1080px]" style={{ background: SKY }} />
+      <div className="absolute left-0 top-[3073px] h-[4052px] w-[1080px]" style={{ background: CYAN }} />
       <div className="absolute left-[89px] top-[3955px] h-[3170px] w-[903px] rounded-[451.5px] bg-white" />
-      <div className="absolute left-[89px] top-[7160px] h-[3304px] w-[903px] rounded-[451.5px] bg-white" />
 
       {/* header */}
       <div className="absolute left-0 top-[-320px] size-[1080px]">{img("ranting.webp")}</div>
@@ -94,18 +67,14 @@ function StoryArt({
       <div className="absolute left-[476px] top-[1435px] size-[880px]">{img("runout.webp")}</div>
       <div className="absolute left-[100px] top-[1465px] size-[880px]">{img("runout.webp")}</div>
 
-      {/* video placeholder + bingkai warung */}
+      {/* video warung */}
       <div className="absolute left-[65px] top-[2147px] h-[1692px] w-[951px] overflow-hidden bg-black">
-        <button
-          onClick={onPlayVideo}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-6"
-          aria-label="Putar video"
-        >
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
           <span className="flex size-[150px] items-center justify-center rounded-full bg-white/95 shadow-lg">
             <svg width="70" height="70" viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5-11-6.5Z" fill="#241019" /></svg>
           </span>
           <span className="rounded-full bg-white/15 px-8 py-3 text-[34px] font-medium text-white/90">Video menyusul</span>
-        </button>
+        </div>
       </div>
       <div className="absolute left-[-236px] top-[1855px] h-[746px] w-[1553px] overflow-hidden pointer-events-none">
         <img alt="" src={`${A}/atap.webp`} className="absolute left-0 top-[-47.11%] h-[147.17%] w-full max-w-none" />
@@ -117,79 +86,294 @@ function StoryArt({
         <img alt="" src={`${A}/bats.webp`} className="absolute left-[-209.66%] top-[-0.04%] h-[100.08%] w-[519.33%] max-w-none" />
       </div>
 
-      {/* ── Bride & Groom (teks diperbaiki) ── */}
-      <div className="absolute left-[540px] top-[4431px] -translate-x-1/2 whitespace-nowrap text-center text-[60.7px] font-bold leading-tight">
-        <p className="mb-0">Bride &amp;</p>
-        <p>Groom</p>
+      {/* Bride & Groom */}
+      <div className="absolute left-1/2 top-[4431px] -translate-x-1/2 text-center font-sans text-black">
+        <p className="text-[60.7px] font-bold leading-tight">Bride &amp;<br />Groom</p>
       </div>
-      <div className="absolute left-[530.5px] top-[4638px] -translate-x-1/2 text-center text-[27.5px] font-bold leading-normal">
-        <p className="mb-0">Assalamualaikum Wr. Wb.</p>
-        <p className="mb-0">Dengan memohon Rahmat &amp; Ridho Allah SWT, kami</p>
-        <p className="mb-0">bermaksud mengundang Bapak/Ibu/Saudara/i untuk</p>
-        <p>menghadiri acara pernikahan putra-putri kami:</p>
+      <div className="absolute left-1/2 top-[4680px] w-[760px] -translate-x-1/2 text-center font-sans text-[27.5px] font-semibold leading-normal text-black">
+        {couple.intro}
       </div>
-
-      {/* Fahmi */}
-      <p className="absolute left-[540.5px] top-[4981px] -translate-x-1/2 whitespace-nowrap text-center text-[60.7px] font-bold">Fahmi</p>
-      <p className="absolute left-[540.5px] top-[5152px] -translate-x-1/2 whitespace-nowrap text-center text-[60.7px] font-bold">Fahmi Muzakky</p>
-      <div className="absolute left-[530.5px] top-[5286px] -translate-x-1/2 text-center text-[27.5px] font-bold leading-normal">
-        <p className="mb-0">Putra Kedua dari Bapak H. Ramli &amp;</p>
-        <p>Ibu Hj. Murtining</p>
-      </div>
-      <Instagram top={5431} href={groomIg ? `https://instagram.com/${groomIg}` : undefined} />
-
-      {/* & */}
-      <p className="absolute left-[540.5px] top-[5684px] -translate-x-1/2 whitespace-nowrap text-center text-[173px] font-bold">&amp;</p>
-
-      {/* Ade (sebelumnya placeholder "Fahmi") */}
-      <p className="absolute left-[540.5px] top-[6019px] -translate-x-1/2 whitespace-nowrap text-center text-[60.7px] font-bold">Ade</p>
-      <p className="absolute left-[540.5px] top-[6190px] -translate-x-1/2 whitespace-nowrap text-center text-[60.7px] font-bold">Ade Fitri Kurniasih</p>
-      <div className="absolute left-[530.5px] top-[6324px] -translate-x-1/2 text-center text-[27.5px] font-bold leading-normal">
-        <p className="mb-0">Putri Bungsu dari Bapak H. Anda &amp;</p>
-        <p>Ibu Hj. Zubaidah</p>
-      </div>
-      <Instagram top={6469} href={brideIg ? `https://instagram.com/${brideIg}` : undefined} />
-
-      {/* ── dekorasi bawah (persis export) ── */}
-      <div className="absolute left-[-634px] top-[6424px] size-[1387px]">{img("runout.webp")}</div>
-      <div className="absolute left-[358px] top-[6424px] size-[1387px]">{img("runout.webp")}</div>
-      <div className="absolute left-[-603px] top-[6647px] flex size-[1164px] items-center justify-center">
-        <div className="rotate-90"><div className="relative size-[1164px]">{img("runout.webp")}</div></div>
-      </div>
-      <div className="absolute left-[540px] top-[6647px] flex size-[1164px] items-center justify-center">
-        <div className="-rotate-90"><div className="relative size-[1164px]">{img("runout.webp")}</div></div>
-      </div>
-      <div className="absolute left-[-36px] top-[6647px] size-[1116px]">{img("runout.webp")}</div>
-      <div className="absolute left-[-18px] top-[6522px] flex size-[1116px] items-center justify-center">
-        <div className="rotate-180"><div className="relative size-[1116px]">{img("runout.webp")}</div></div>
-      </div>
-      <div className="absolute left-[-94px] top-[6526px] size-[1268px]">{img("burung.webp")}</div>
-
-      {/* zona taman + footer */}
-      <div className="absolute left-[-335px] top-[9763px] h-[898px] w-[899px]">{img("kk.webp")}</div>
-      <div className="absolute left-[105px] top-[9643px] h-[898px] w-[899px]">{img("kk.webp")}</div>
-      <div className="absolute left-[565px] top-[9733px] h-[898px] w-[899px]">{img("kk.webp")}</div>
-      <div className="absolute left-[-6px] top-[9501px] size-[1093px]">{img("slenei.webp")}</div>
-      <div className="absolute left-[-300px] top-[9372px] size-[1680px]">{img("kenbangdrown.webp")}</div>
-      <div className="absolute left-[-6px] top-[10054px] size-[1080px]">{img("ranting.webp")}</div>
-
-      {/* lantai berulang */}
-      {[10661, 12841, 15021, 17138].map((t) => (
-        <div key={`lt-${t}`} className="absolute left-0 h-[1090px] w-[1089px]" style={{ top: t }}>{img("lantau.webp")}</div>
-      ))}
-      {[11751, 13931, 16111, 18228].map((t) => (
-        <div key={`ltf-${t}`} className="absolute left-0 flex h-[1090px] w-[1089px] items-center justify-center" style={{ top: t }}>
-          <div className="-scale-y-100"><div className="relative h-[1090px] w-[1089px]">{img("lantau.webp")}</div></div>
-        </div>
-      ))}
-
-      <div className="absolute left-[-189px] top-[16950px] size-[1466px]">{img("gapura.webp")}</div>
-      <div className="absolute left-[-2px] top-[17100px] h-[1532px] w-[1083px]">{img("pengantin3.webp")}</div>
+      <PersonBlock topName={4990} name={couple.groom} ig={groomIg} />
+      <p className="absolute left-1/2 top-[5660px] -translate-x-1/2 text-center font-sans text-[173px] font-bold leading-none text-black">&amp;</p>
+      <PersonBlock topName={6028} name={couple.bride} ig={brideIg} />
     </div>
   );
 }
 
-/* ────────────────────────── WADAH SKALA ────────────────────────── */
+function PersonBlock({
+  topName,
+  name,
+  ig,
+}: {
+  topName: number;
+  name: { name: string; shortName: string; order: string; parents: string };
+  ig?: string;
+}) {
+  return (
+    <div className="absolute left-1/2 -translate-x-1/2 text-center font-sans text-black" style={{ top: topName, width: 900 }}>
+      <p className="text-[60.7px] font-bold leading-tight">{name.name}</p>
+      <p className="mt-[16px] text-[27.5px] font-semibold leading-normal">
+        {name.order} {name.parents}
+      </p>
+      <div className="mt-[22px] flex justify-center">
+        <a
+          href={ig ? `https://instagram.com/${ig}` : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`inline-flex items-center gap-2 rounded-[33px] bg-black px-[35px] py-[10px] text-[34.9px] font-bold text-white ${ig ? "" : "pointer-events-none opacity-60"}`}
+        >
+          Instagram
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════ STORY: konten (flow) ══════════════════════════ */
+
+function Card({ title, children }: { title?: string; children: React.ReactNode }) {
+  return (
+    <div className="mx-auto w-[903px] rounded-[80px] bg-white px-[75px] py-[90px] text-center font-sans text-black shadow-[0_24px_60px_rgba(20,40,60,0.12)]">
+      {title && <h2 className="mb-[50px] text-[64px] font-extrabold leading-tight">{title}</h2>}
+      {children}
+    </div>
+  );
+}
+
+function useCountdown(iso: string) {
+  const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
+  useEffect(() => {
+    const target = new Date(iso).getTime();
+    const tick = () => {
+      const diff = Math.max(0, target - Date.now());
+      setT({
+        d: Math.floor(diff / 86400000),
+        h: Math.floor((diff / 3600000) % 24),
+        m: Math.floor((diff / 60000) % 60),
+        s: Math.floor((diff / 1000) % 60),
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [iso]);
+  return t;
+}
+
+function StoryContent({ guestName }: { guestName: string }) {
+  const cd = useCountdown(event.isoDateTime);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  async function copy(text: string, id: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(id);
+      setTimeout(() => setCopied((c) => (c === id ? null : c)), 1800);
+    } catch {
+      /* diam — nomor tetap terlihat */
+    }
+  }
+
+  return (
+    <div className="w-[1080px] px-[40px] py-[120px]" style={{ background: CYAN }}>
+      <div className="flex flex-col gap-[120px]">
+        {/* Save the Date */}
+        <Card title="Save the Date">
+          <p className="text-[40px] font-semibold text-black">{event.dateLabel}</p>
+          <div className="mt-[50px] flex justify-center gap-[24px]">
+            {[["Hari", cd.d], ["Jam", cd.h], ["Menit", cd.m], ["Detik", cd.s]].map(([l, v]) => (
+              <div key={l as string} className="flex w-[150px] flex-col items-center rounded-[28px] bg-[#adfffe] py-[26px]">
+                <span className="text-[56px] font-extrabold leading-none text-black">{String(v).padStart(2, "0")}</span>
+                <span className="mt-[10px] text-[24px] font-semibold text-black/60">{l}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Wedding Event */}
+        <Card title="Wedding Event">
+          {[event.akad, event.resepsi].map((e) => (
+            <div key={e.label} className="mb-[40px] rounded-[36px] border-2 border-black/10 py-[44px]">
+              <p className="text-[42px] font-bold text-black">{e.label}</p>
+              <p className="mt-[18px] text-[30px] text-black/75">{e.day} | {e.date}</p>
+              <p className="mt-[6px] text-[30px] text-black/75">{e.time}</p>
+            </div>
+          ))}
+          <div className="rounded-[36px] border-2 border-black/10 px-[40px] py-[44px]">
+            <p className="text-[34px] font-bold text-black">{event.location.name}</p>
+            <p className="mt-[16px] text-[27px] leading-relaxed text-black/70">{event.location.address}</p>
+            <a
+              href={event.location.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-[30px] inline-flex rounded-full bg-black px-[46px] py-[20px] text-[30px] font-bold text-white"
+            >
+              Buka Google Maps
+            </a>
+          </div>
+        </Card>
+
+        {/* Wedding Gift */}
+        <Card title={gift.heading}>
+          <p className="mx-auto max-w-[720px] text-[28px] leading-relaxed text-black/75">{gift.intro}</p>
+          <div className="mt-[50px] flex flex-col gap-[34px]">
+            {gift.accounts.map((acc) => (
+              <div key={acc.number} className="rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
+                <p className="text-[34px] font-extrabold uppercase tracking-wide text-black">{acc.bank}</p>
+                <p className="mt-[16px] text-[44px] font-bold tracking-[0.08em] text-black">{acc.number}</p>
+                <p className="mt-[8px] text-[28px] text-black/65">a.n {acc.holder}</p>
+                <button
+                  onClick={() => copy(acc.number, acc.number)}
+                  className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[16px] text-[28px] font-bold text-black active:scale-[0.97]"
+                >
+                  {copied === acc.number ? "Tersalin ✓" : "Salin Nomor"}
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="mt-[50px]">
+            <h3 className="text-[46px] font-extrabold text-black">{gift.shipping.heading}</h3>
+            <div className="mt-[30px] rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
+              <p className="text-[27px] leading-relaxed text-black/75">{gift.shipping.address}</p>
+              <p className="mt-[14px] text-[30px] font-bold text-black">{gift.shipping.recipient}</p>
+              <button
+                onClick={() => copy(`${gift.shipping.address} (${gift.shipping.recipient})`, "addr")}
+                className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[16px] text-[28px] font-bold text-black active:scale-[0.97]"
+              >
+                {copied === "addr" ? "Tersalin ✓" : "Salin Alamat"}
+              </button>
+            </div>
+          </div>
+        </Card>
+
+        {/* RSVP + Best Wishes */}
+        <RsvpCard guestName={guestName} />
+      </div>
+    </div>
+  );
+}
+
+function RsvpCard({ guestName }: { guestName: string }) {
+  const [name, setName] = useState(guestName);
+  const [attendance, setAttendance] = useState<Wish["attendance"]>("hadir");
+  const [guests, setGuests] = useState("1");
+  const [address, setAddress] = useState("");
+  const [message, setMessage] = useState("");
+  const [wishes, setWishes] = useState<Wish[]>([]);
+  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+
+  useEffect(() => {
+    if (guestName) setName((c) => c || guestName);
+  }, [guestName]);
+  useEffect(() => {
+    fetch("/api/wishes").then((r) => r.json()).then((d) => setWishes(d.wishes ?? [])).catch(() => {});
+  }, []);
+
+  const need = attendance !== "tidak_hadir";
+  const labels: Record<Wish["attendance"], string> = { hadir: "Hadir", tidak_hadir: "Tidak hadir", ragu: "Masih Ragu" };
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim() || !message.trim()) return;
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/wishes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, attendance, guests: need ? guests : null, address, message }),
+      });
+      if (!res.ok) throw new Error();
+      const d = await res.json();
+      setWishes((p) => [d.wish, ...p]);
+      setMessage("");
+      setStatus("sent");
+      setTimeout(() => setStatus("idle"), 2500);
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  const inputCls = "w-full rounded-[24px] border-2 border-black/15 bg-white px-[30px] py-[24px] text-[30px] text-black outline-none";
+
+  return (
+    <Card title="RSVP">
+      <form onSubmit={submit} className="flex flex-col gap-[30px] text-left">
+        <div>
+          <label className="mb-[12px] block text-[26px] font-bold text-black/60">Nama*</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Nama Anda" className={inputCls} />
+        </div>
+        <div>
+          <label className="mb-[12px] block text-[26px] font-bold text-black/60">Konfirmasi Kehadiran*</label>
+          <div className="grid grid-cols-3 gap-[16px]">
+            {(Object.keys(labels) as Wish["attendance"][]).map((k) => (
+              <button
+                type="button"
+                key={k}
+                onClick={() => setAttendance(k)}
+                className={`rounded-[20px] border-2 py-[22px] text-[26px] font-bold ${attendance === k ? "border-black bg-black text-white" : "border-black/15 text-black/70"}`}
+              >
+                {labels[k]}
+              </button>
+            ))}
+          </div>
+        </div>
+        {need && (
+          <div>
+            <label className="mb-[12px] block text-[26px] font-bold text-black/60">Jumlah Kehadiran*</label>
+            <input type="number" inputMode="numeric" min={1} max={20} value={guests} onChange={(e) => setGuests(e.target.value)} required className={inputCls} />
+          </div>
+        )}
+        <div>
+          <label className="mb-[12px] block text-[26px] font-bold text-black/60">Alamat Domisili</label>
+          <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Kota / kecamatan (opsional)" className={inputCls} />
+        </div>
+        <div>
+          <label className="mb-[12px] block text-[26px] font-bold text-black/60">Ucapan &amp; Doa*</label>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} required rows={3} placeholder="Tuliskan ucapan & doa terbaik Anda..." className={`${inputCls} resize-none`} />
+        </div>
+        <button type="submit" disabled={status === "loading"} className="rounded-full bg-black py-[26px] text-[32px] font-bold text-white disabled:opacity-60">
+          {status === "loading" ? "Mengirim..." : status === "sent" ? "Terkirim, terima kasih!" : "Submit"}
+        </button>
+        {status === "error" && <p className="text-center text-[24px] text-red-600">Gagal mengirim, coba lagi.</p>}
+      </form>
+
+      {wishes.length > 0 && (
+        <div className="mt-[70px] text-left">
+          <h3 className="mb-[30px] text-center text-[46px] font-extrabold text-black">Best Wishes</h3>
+          <div className="flex max-h-[900px] flex-col gap-[24px] overflow-y-auto">
+            {wishes.map((w) => (
+              <div key={w.id} className="rounded-[28px] bg-[#eafcff] px-[36px] py-[28px]">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[30px] font-bold text-black">{w.name}</span>
+                  <span className="shrink-0 text-[22px] font-semibold text-black/45">
+                    {labels[w.attendance]}{w.guests ? ` · ${w.guests}` : ""}
+                  </span>
+                </div>
+                <p className="mt-[10px] text-[28px] leading-relaxed text-black/70">{w.message}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+/* ══════════════════════════ STORY: footer ══════════════════════════ */
+
+function StoryFooter() {
+  return (
+    <div className="relative w-[1080px]" style={{ height: 2400, background: CYAN }}>
+      <div className="absolute inset-x-0 top-[260px] px-[80px] text-center font-sans text-black">
+        <p className="text-[30px] font-medium leading-relaxed text-black/80">{closing.text}</p>
+      </div>
+      <div className="absolute left-[-189px] top-[760px] size-[1466px]">{img("gapura.webp")}</div>
+      <div className="absolute left-[-2px] top-[900px] h-[1532px] w-[1083px]">{img("pengantin3.webp")}</div>
+    </div>
+  );
+}
+
+/* ══════════════════════════ WADAH SKALA ══════════════════════════ */
 
 export default function InviteCanvas({
   guestName,
@@ -213,13 +397,14 @@ export default function InviteCanvas({
   }
 
   return (
-    <div
-      className="mx-auto min-h-dvh w-full max-w-[480px] bg-white transition-opacity duration-500"
-      style={{ opacity: fading ? 0 : 1 }}
-    >
+    <div className="mx-auto min-h-dvh w-full max-w-[480px] transition-opacity duration-500" style={{ opacity: fading ? 0 : 1, background: CYAN }}>
       {opened ? (
         <StoryScaler>
-          <StoryArt groomIg={groomIg} brideIg={brideIg} />
+          <div className="w-[1080px]">
+            <StoryTop groomIg={groomIg} brideIg={brideIg} />
+            <StoryContent guestName={guestName} />
+            <StoryFooter />
+          </div>
         </StoryScaler>
       ) : (
         <CoverScaler onOpen={open}>
@@ -230,21 +415,13 @@ export default function InviteCanvas({
   );
 }
 
-/** Cover: skala agar muat penuh (lebar & tinggi), tombol overlay presisi. */
 function CoverScaler({ children, onOpen }: { children: React.ReactNode; onOpen: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const [s, setS] = useState(0);
-
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const update = () => {
-      const w = el.clientWidth;
-      const h = el.clientHeight;
-      // MAX = isi penuh layar (tanpa bilah putih); sisi yang lebih sedikit
-      // dipangkas oleh overflow-hidden — tepi kanvas cuma langit & bunga.
-      setS(Math.max(w / DESIGN_W, h / COVER_H));
-    };
+    const update = () => setS(Math.max(el.clientWidth / DESIGN_W, el.clientHeight / COVER_H));
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
@@ -254,26 +431,16 @@ function CoverScaler({ children, onOpen }: { children: React.ReactNode; onOpen: 
       window.removeEventListener("resize", update);
     };
   }, []);
-
   return (
     <div ref={ref} className="relative flex h-dvh w-full items-center justify-center overflow-hidden bg-white">
       <div style={{ width: DESIGN_W * s, height: COVER_H * s, position: "relative", flexShrink: 0 }}>
         <div style={{ width: DESIGN_W, height: COVER_H, transformOrigin: "top left", transform: `scale(${s})`, position: "absolute", inset: 0 }}>
           {children}
         </div>
-        {/* tombol Buka Undangan (Figma: 316,1623, 448x67) — pil hitam */}
         <button
           onClick={onOpen}
-          style={{
-            position: "absolute",
-            left: 316 * s,
-            top: 1623 * s,
-            width: 448 * s,
-            height: 67 * s,
-            borderRadius: 9999,
-            fontSize: 40 * s,
-          }}
-          className="flex cursor-pointer items-center justify-center gap-2 bg-black font-semibold text-white shadow-lg transition active:scale-[0.97]"
+          style={{ position: "absolute", left: 316 * s, top: 1623 * s, width: 448 * s, height: 67 * s, borderRadius: 9999, fontSize: 40 * s }}
+          className="flex cursor-pointer items-center justify-center bg-black font-semibold text-white shadow-lg transition active:scale-[0.97]"
         >
           Buka Undangan
         </button>
@@ -282,24 +449,32 @@ function CoverScaler({ children, onOpen }: { children: React.ReactNode; onOpen: 
   );
 }
 
-/** Story: skala ke lebar wadah, tinggi mengikuti. */
+/** Story: skala ke lebar wadah; tinggi mengikuti konten (variabel). */
 function StoryScaler({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const outer = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLDivElement>(null);
   const [s, setS] = useState(0);
+  const [h, setH] = useState(0);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const update = () => setS(el.clientWidth / DESIGN_W);
+    const o = outer.current;
+    const i = inner.current;
+    if (!o || !i) return;
+    const update = () => {
+      const scale = o.clientWidth / DESIGN_W;
+      setS(scale);
+      setH(i.offsetHeight * scale);
+    };
     update();
     const ro = new ResizeObserver(update);
-    ro.observe(el);
+    ro.observe(o);
+    ro.observe(i);
     return () => ro.disconnect();
   }, []);
 
   return (
-    <div ref={ref} className="relative w-full" style={{ height: STORY_H * s }}>
-      <div style={{ width: DESIGN_W, height: STORY_H, transformOrigin: "top left", transform: `scale(${s})`, position: "absolute", top: 0, left: 0 }}>
+    <div ref={outer} className="relative w-full" style={{ height: h || undefined }}>
+      <div ref={inner} style={{ width: DESIGN_W, transformOrigin: "top left", transform: `scale(${s})`, position: "absolute", top: 0, left: 0 }}>
         {children}
       </div>
     </div>
