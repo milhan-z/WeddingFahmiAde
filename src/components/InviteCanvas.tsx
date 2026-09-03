@@ -175,80 +175,114 @@ function StoryContent({ guestName }: { guestName: string }) {
   }
 
   return (
-    <div className="w-[1080px] px-[40px] py-[120px]" style={{ background: CYAN }}>
-      <div className="flex flex-col gap-[120px]">
-        {/* Save the Date */}
-        <Card title="Save the Date">
-          <p className="text-[40px] font-semibold text-black">{event.dateLabel}</p>
-          <div className="mt-[50px] flex justify-center gap-[24px]">
-            {[["Hari", cd.d], ["Jam", cd.h], ["Menit", cd.m], ["Detik", cd.s]].map(([l, v]) => (
-              <div key={l as string} className="flex w-[150px] flex-col items-center rounded-[28px] bg-[#adfffe] py-[26px]">
-                <span className="text-[56px] font-extrabold leading-none text-black">{String(v).padStart(2, "0")}</span>
-                <span className="mt-[10px] text-[24px] font-semibold text-black/60">{l}</span>
+    <>
+      {/* ── ZONA CYAN: Save the Date + Wedding Event ── */}
+      <div className="w-[1080px] px-[40px] pb-[60px] pt-[120px]" style={{ background: CYAN }}>
+        <div className="flex flex-col gap-[120px]">
+          <Card title="Save the Date">
+            <p className="text-[40px] font-semibold text-black">{event.dateLabel}</p>
+            <div className="mt-[50px] flex justify-center gap-[24px]">
+              {[["Hari", cd.d], ["Jam", cd.h], ["Menit", cd.m], ["Detik", cd.s]].map(([l, v]) => (
+                <div key={l as string} className="flex w-[150px] flex-col items-center rounded-[28px] bg-[#adfffe] py-[26px]">
+                  <span className="text-[56px] font-extrabold leading-none text-black">{String(v).padStart(2, "0")}</span>
+                  <span className="mt-[10px] text-[24px] font-semibold text-black/60">{l}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card title="Wedding Event">
+            {[event.akad, event.resepsi].map((e) => (
+              <div key={e.label} className="mb-[40px] rounded-[36px] border-2 border-black/10 py-[44px]">
+                <p className="text-[42px] font-bold text-black">{e.label}</p>
+                <p className="mt-[18px] text-[30px] text-black/75">{e.day} | {e.date}</p>
+                <p className="mt-[6px] text-[30px] text-black/75">{e.time}</p>
               </div>
             ))}
-          </div>
-        </Card>
-
-        {/* Wedding Event */}
-        <Card title="Wedding Event">
-          {[event.akad, event.resepsi].map((e) => (
-            <div key={e.label} className="mb-[40px] rounded-[36px] border-2 border-black/10 py-[44px]">
-              <p className="text-[42px] font-bold text-black">{e.label}</p>
-              <p className="mt-[18px] text-[30px] text-black/75">{e.day} | {e.date}</p>
-              <p className="mt-[6px] text-[30px] text-black/75">{e.time}</p>
+            <div className="rounded-[36px] border-2 border-black/10 px-[40px] py-[44px]">
+              <p className="text-[34px] font-bold text-black">{event.location.name}</p>
+              <p className="mt-[16px] text-[27px] leading-relaxed text-black/70">{event.location.address}</p>
+              <a
+                href={event.location.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-[30px] inline-flex rounded-full bg-black px-[46px] py-[20px] text-[30px] font-bold text-white"
+              >
+                Buka Google Maps
+              </a>
             </div>
-          ))}
-          <div className="rounded-[36px] border-2 border-black/10 px-[40px] py-[44px]">
-            <p className="text-[34px] font-bold text-black">{event.location.name}</p>
-            <p className="mt-[16px] text-[27px] leading-relaxed text-black/70">{event.location.address}</p>
-            <a
-              href={event.location.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-[30px] inline-flex rounded-full bg-black px-[46px] py-[20px] text-[30px] font-bold text-white"
-            >
-              Buka Google Maps
-            </a>
-          </div>
-        </Card>
+          </Card>
+        </div>
+      </div>
 
-        {/* Wedding Gift */}
-        <Card title={gift.heading}>
-          <p className="mx-auto max-w-[720px] text-[28px] leading-relaxed text-black/75">{gift.intro}</p>
-          <div className="mt-[50px] flex flex-col gap-[34px]">
-            {gift.accounts.map((acc) => (
-              <div key={acc.number} className="rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
-                <p className="text-[34px] font-extrabold uppercase tracking-wide text-black">{acc.bank}</p>
-                <p className="mt-[16px] text-[44px] font-bold tracking-[0.08em] text-black">{acc.number}</p>
-                <p className="mt-[8px] text-[28px] text-black/65">a.n {acc.holder}</p>
+      {/* ── TRANSISI: pasangan candid di taman (cyan → gelap) ── */}
+      <TransitionScene />
+
+      {/* ── ZONA LANTAU (gelap): Wedding Gift + RSVP + Best Wishes ── */}
+      <div
+        className="w-[1080px] px-[40px] pb-[120px] pt-[80px]"
+        style={{
+          backgroundColor: "#28110b",
+          backgroundImage: `url(${A}/lantau.webp)`,
+          backgroundSize: "1080px auto",
+          backgroundRepeat: "repeat-y",
+          backgroundPosition: "top center",
+        }}
+      >
+        <div className="flex flex-col gap-[120px]">
+          <Card title={gift.heading}>
+            <p className="mx-auto max-w-[720px] text-[28px] leading-relaxed text-black/75">{gift.intro}</p>
+            <div className="mt-[50px] flex flex-col gap-[34px]">
+              {gift.accounts.map((acc) => (
+                <div key={acc.number} className="rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
+                  <p className="text-[34px] font-extrabold uppercase tracking-wide text-black">{acc.bank}</p>
+                  <p className="mt-[16px] text-[44px] font-bold tracking-[0.08em] text-black">{acc.number}</p>
+                  <p className="mt-[8px] text-[28px] text-black/65">a.n {acc.holder}</p>
+                  <button
+                    onClick={() => copy(acc.number, acc.number)}
+                    className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[16px] text-[28px] font-bold text-black active:scale-[0.97]"
+                  >
+                    {copied === acc.number ? "Tersalin ✓" : "Salin Nomor"}
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="mt-[50px]">
+              <h3 className="text-[46px] font-extrabold text-black">{gift.shipping.heading}</h3>
+              <div className="mt-[30px] rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
+                <p className="text-[27px] leading-relaxed text-black/75">{gift.shipping.address}</p>
+                <p className="mt-[14px] text-[30px] font-bold text-black">{gift.shipping.recipient}</p>
                 <button
-                  onClick={() => copy(acc.number, acc.number)}
+                  onClick={() => copy(`${gift.shipping.address} (${gift.shipping.recipient})`, "addr")}
                   className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[16px] text-[28px] font-bold text-black active:scale-[0.97]"
                 >
-                  {copied === acc.number ? "Tersalin ✓" : "Salin Nomor"}
+                  {copied === "addr" ? "Tersalin ✓" : "Salin Alamat"}
                 </button>
               </div>
-            ))}
-          </div>
-          <div className="mt-[50px]">
-            <h3 className="text-[46px] font-extrabold text-black">{gift.shipping.heading}</h3>
-            <div className="mt-[30px] rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
-              <p className="text-[27px] leading-relaxed text-black/75">{gift.shipping.address}</p>
-              <p className="mt-[14px] text-[30px] font-bold text-black">{gift.shipping.recipient}</p>
-              <button
-                onClick={() => copy(`${gift.shipping.address} (${gift.shipping.recipient})`, "addr")}
-                className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[16px] text-[28px] font-bold text-black active:scale-[0.97]"
-              >
-                {copied === "addr" ? "Tersalin ✓" : "Salin Alamat"}
-              </button>
             </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* RSVP + Best Wishes */}
-        <RsvpCard guestName={guestName} />
+          <RsvpCard guestName={guestName} />
+        </div>
       </div>
+    </>
+  );
+}
+
+/** Transisi bergaya scene: pasangan candid (slenei) di taman, dari langit
+ *  cyan memudar ke tirai gelap (Lantau). Dekoratif — tanpa teks. */
+function TransitionScene() {
+  return (
+    <div className="relative w-[1080px] overflow-hidden" style={{ height: 1500, background: `linear-gradient(${CYAN} 0%, ${CYAN} 42%, #28110b 100%)` }}>
+      {/* semak di belakang */}
+      <div className="absolute left-[-180px] top-[360px] size-[900px]">{img("kk.webp")}</div>
+      <div className="absolute left-[560px] top-[330px] size-[900px]">{img("kk.webp")}</div>
+      {/* pasangan candid */}
+      <div className="absolute left-1/2 top-[300px] h-[1000px] w-[1000px] -translate-x-1/2">{img("slenei.webp")}</div>
+      {/* dahan berbunga sebagai garis batas ke zona gelap */}
+      <div className="absolute left-[-6px] top-[880px] size-[1080px]">{img("ranting.webp")}</div>
+      <div className="absolute left-[-160px] top-[980px] size-[760px]">{img("runout.webp")}</div>
+      <div className="absolute left-[480px] top-[980px] size-[760px]">{img("runout.webp")}</div>
     </div>
   );
 }
@@ -363,12 +397,23 @@ function RsvpCard({ guestName }: { guestName: string }) {
 
 function StoryFooter() {
   return (
-    <div className="relative w-[1080px]" style={{ height: 2400, background: CYAN }}>
-      <div className="absolute inset-x-0 top-[260px] px-[80px] text-center font-sans text-black">
-        <p className="text-[30px] font-medium leading-relaxed text-black/80">{closing.text}</p>
+    <div
+      className="relative w-[1080px]"
+      style={{
+        height: 2400,
+        backgroundColor: "#28110b",
+        backgroundImage: `url(${A}/lantau.webp)`,
+        backgroundSize: "1080px auto",
+        backgroundRepeat: "repeat-y",
+        backgroundPosition: "top center",
+      }}
+    >
+      <div className="absolute inset-x-0 top-[220px] px-[90px] text-center font-sans text-white">
+        <p className="text-[30px] font-medium leading-relaxed text-white/85">{closing.text}</p>
+        <p className="mt-[40px] font-serif text-[64px] font-semibold text-white">{couple.pairName}</p>
       </div>
-      <div className="absolute left-[-189px] top-[760px] size-[1466px]">{img("gapura.webp")}</div>
-      <div className="absolute left-[-2px] top-[900px] h-[1532px] w-[1083px]">{img("pengantin3.webp")}</div>
+      <div className="absolute left-[-189px] top-[820px] size-[1466px]">{img("gapura.webp")}</div>
+      <div className="absolute left-[-2px] top-[960px] h-[1532px] w-[1083px]">{img("pengantin3.webp")}</div>
     </div>
   );
 }
