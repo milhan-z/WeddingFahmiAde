@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { event } from "@/lib/data";
 
 /**
  * Halaman pembuka — meniru frame penutup video (02:47–02:51): pelaminan
@@ -63,16 +64,29 @@ export default function Cover({
           />
         </div>
 
+        {/* tanggal + label undangan */}
+        <div
+          className="animate-rise-in -mt-1 flex flex-col items-center gap-1.5"
+          style={{ animationDelay: "0.35s" }}
+        >
+          <span className="font-serif text-sm tracking-[0.15em] text-maroon/85">
+            {event.dateLabel}
+          </span>
+          <span className="ornament-divider w-52 font-serif text-[9px] uppercase tracking-[0.32em] text-mustard">
+            <span className="shrink-0">Wedding Invitation</span>
+          </span>
+        </div>
+
         {/* nama tamu */}
         <div
-          className="animate-rise-in -mt-2 flex flex-col items-center gap-1"
+          className="animate-rise-in mt-4 flex flex-col items-center gap-1"
           style={{ animationDelay: "0.5s" }}
         >
           <span className="font-serif text-[10px] uppercase tracking-[0.32em] text-ink/45">
             Kepada Yth.
           </span>
           <span className="max-w-[16rem] font-serif text-lg leading-snug text-maroon sm:text-xl">
-            {guestName || "Bapak / Ibu / Saudara/i"}
+            {guestName || "Tamu Undangan"}
           </span>
         </div>
 

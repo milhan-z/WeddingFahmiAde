@@ -5,6 +5,10 @@ export type Wish = {
   id: string;
   name: string;
   attendance: "hadir" | "tidak_hadir" | "ragu";
+  /** Jumlah orang yang hadir. Null kalau tamu menyatakan tidak hadir. */
+  guests: number | null;
+  /** Alamat domisili — opsional, dipakai untuk kirim souvenir. */
+  address: string | null;
   message: string;
   created_at: string;
 };
@@ -17,10 +21,15 @@ export type Wish = {
 //     id uuid primary key default gen_random_uuid(),
 //     name text not null,
 //     attendance text not null,
+//     guests int,
+//     address text,
 //     message text not null,
 //     created_at timestamptz default now()
 //   );
 const memoryStore: Wish[] = [];
+
+const ATTENDANCE = ["hadir", "tidak_hadir", "ragu"] as const;
+const MAX_GUESTS = 20;
 
 export async function GET() {
   if (supabase) {
@@ -45,15 +54,30 @@ export async function POST(req: NextRequest) {
   const name = String(body.name ?? "").trim();
   const attendance = String(body.attendance ?? "");
   const message = String(body.message ?? "").trim();
+  const address = String(body.address ?? "").trim() || null;
 
-  if (!name || !message || !["hadir", "tidak_hadir", "ragu"].includes(attendance)) {
+  if (!name || !message || !ATTENDANCE.includes(attendance as Wish["attendance"])) {
     return NextResponse.json({ error: "Data tidak lengkap." }, { status: 400 });
+  }
+
+  // Jumlah kehadiran hanya bermakna kalau tamu menyatakan hadir/ragu.
+  // Dibatasi supaya angka iseng tidak merusak rekap mempelai.
+  let guests: number | null = null;
+  if (attendance !== "tidak_hadir") {
+    const parsed = Number.parseInt(String(body.guests ?? ""), 10);
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      return NextResponse.json(
+        { error: "Jumlah kehadiran tidak valid." },
+        { status: 400 }
+      );
+    }
+    guests = Math.min(parsed, MAX_GUESTS);
   }
 
   if (supabase) {
     const { data, error } = await supabase
       .from("wishes")
-      .insert([{ name, attendance, message }])
+      .insert([{ name, attendance, guests, address, message }])
       .select()
       .single();
     if (error) {
@@ -66,6 +90,8 @@ export async function POST(req: NextRequest) {
     id: crypto.randomUUID(),
     name,
     attendance: attendance as Wish["attendance"],
+    guests,
+    address,
     message,
     created_at: new Date().toISOString(),
   };

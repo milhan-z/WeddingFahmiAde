@@ -1,47 +1,93 @@
-// Semua data undangan dikumpulkan di sini biar gampang diubah tanpa
-// bongkar komponen. Ganti teks/tanggal/lokasi di bawah sesuai kebutuhan.
+// Semua teks undangan dikumpulkan di sini biar gampang diubah tanpa
+// bongkar komponen. Isi mengikuti undangan referensi invi.leafitation.com/fahmi-ade.
 
 export const couple = {
+  // Urutan penyebutan mengikuti referensi: Fahmi lebih dulu, baru Ade.
   groom: {
     name: "Fahmi Muzakky",
     shortName: "Fahmi",
-    parents: "Putra dari Bapak ... & Ibu ...",
+    order: "Putra Kedua dari",
+    parents: "Bapak H. Ramli & Ibu Hj. Murtining",
   },
   bride: {
     name: "Ade Fitri Kurniasih",
     shortName: "Ade",
-    parents: "Putri dari Bapak ... & Ibu ...",
+    order: "Putri Bungsu dari",
+    parents: "Bapak H. Anda & Ibu Hj. Zubaidah",
   },
+  /** Dipakai di judul & penutup. */
+  pairName: "Fahmi & Ade",
 };
 
 export const event = {
   akad: {
     label: "Akad Nikah",
     day: "Sabtu",
-    date: "12 September 2026",
-    time: "08.00 WIB \u2013 selesai",
+    date: "12.09.2026",
+    time: "Pukul 09.00 WIB",
   },
   resepsi: {
     label: "Resepsi",
     day: "Sabtu",
-    date: "12 September 2026",
-    time: "11.00 WIB \u2013 selesai",
+    date: "12.09.2026",
+    time: "Pukul 12.30 WIB",
   },
+  dateLabel: "12 September 2026",
   location: {
-    name: "Bojongsari, Depok",
-    address: "Alamat lengkap menyusul di undangan cetak / konfirmasi WA.",
-    mapsUrl: "https://maps.google.com/?q=Bojongsari,Depok",
+    name: "Kediaman Mempelai Wanita",
+    address:
+      "Jalan H. Maat, RT.2/RW.3, Duren Seribu Sawangan, Kota Depok, Jawa Barat, Id 16518",
+    mapsUrl:
+      "https://maps.google.com/?q=Jalan+H.+Maat+Duren+Seribu+Sawangan+Depok+16518",
   },
-  // Dipakai untuk hitung mundur. Format ISO, sesuaikan jam mulai akad.
-  isoDateTime: "2026-09-12T08:00:00+07:00",
+  // Dipakai untuk hitung mundur — disamakan dengan jam akad (09.00 WIB).
+  isoDateTime: "2026-09-12T09:00:00+07:00",
 };
 
 export const quranQuote = {
+  heading: "We Found Love",
   arabic:
     "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ",
   translation:
-    "\u201cDan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir.\u201d",
-  source: "QS. Ar-Rum: 21",
+    "Dan diantara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikanNya diantaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir.",
+  source: "Qs. Ar. Rum (30) : 21",
+};
+
+/**
+ * ⚠️ NOMOR REKENING — VERIFIKASI SEBELUM DISEBAR KE TAMU.
+ *
+ * Angka di bawah diambil dari undangan referensi, bukan dikonfirmasi
+ * langsung oleh mempelai. Salah satu digit saja berarti tamu mentransfer
+ * ke rekening orang lain, dan uangnya tidak bisa ditarik kembali.
+ * Cocokkan dulu dengan Fahmi/Ade sebelum link undangan dibagikan.
+ */
+export const gift = {
+  heading: "Wedding Gift",
+  intro:
+    "Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Dan jika memberi adalah ungkapan tanda kasih Anda, Anda dapat memberi kado secara cashless.",
+  accounts: [
+    {
+      bank: "Bank BCA",
+      number: "6365185909",
+      holder: "Ade Fitri Kurniasih",
+    },
+    {
+      bank: "Bank Mandiri",
+      number: "1330033238577",
+      holder: "Fahmi Muzakky",
+    },
+  ],
+  shipping: {
+    heading: "Kirim Kado",
+    address:
+      "Jalan H. Maat, RT.2/RW.3, Duren Seribu Sawangan, Kota Depok, Jawa Barat, Id 16518",
+    recipient: "a.n Ade Fitri Kurniasih",
+  },
+};
+
+export const closing = {
+  text: "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restunya untuk pernikahan kami. Atas do'a & restunya, kami ucapkan terima kasih.",
+  signature: "Fahmi & Ade",
 };
 
 // Ganti/isi file mp3 di public/music/song.mp3, tombol musik otomatis aktif.
