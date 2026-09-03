@@ -2,18 +2,24 @@
 // bongkar komponen. Isi mengikuti undangan referensi invi.leafitation.com/fahmi-ade.
 
 export const couple = {
+  // Teks pembuka di section Bride & Groom (mengikuti frame Figma "Layout Web").
+  intro:
+    "Assalamualaikum Wr. Wb. Dengan memohon Rahmat & Ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan putra-putri kami:",
   // Urutan penyebutan mengikuti referensi: Fahmi lebih dulu, baru Ade.
   groom: {
     name: "Fahmi Muzakky",
     shortName: "Fahmi",
     order: "Putra Kedua dari",
     parents: "Bapak H. Ramli & Ibu Hj. Murtining",
+    // TODO: isi username Instagram (tanpa @). Kosongkan kalau tak ada tombol.
+    instagram: "",
   },
   bride: {
     name: "Ade Fitri Kurniasih",
     shortName: "Ade",
     order: "Putri Bungsu dari",
     parents: "Bapak H. Anda & Ibu Hj. Zubaidah",
+    instagram: "",
   },
   /** Dipakai di judul & penutup. */
   pairName: "Fahmi & Ade",

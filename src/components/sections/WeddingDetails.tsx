@@ -24,9 +24,6 @@ export default function WeddingDetails() {
           <p className="ornament-divider font-serif text-[11px] uppercase tracking-[0.3em] text-mustard">
             <span className="shrink-0">Wedding Event</span>
           </p>
-          <p className="mx-auto mt-6 max-w-sm font-body text-base leading-relaxed text-ink/75">
-            {event.intro}
-          </p>
         </Reveal>
 
         <Reveal delay={0.15} className="mt-8 space-y-6">
