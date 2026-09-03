@@ -1,7 +1,30 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://localhost:3000";
+/**
+ * URL dasar untuk metadata (preview link WhatsApp/Telegram).
+ *
+ * Catatan: pakai pengecekan string kosong, bukan `??`. Vercel mengisi env
+ * var yang dibiarkan kosong di dashboard sebagai string kosong — itu lolos
+ * dari `??` lalu menjatuhkan build di `new URL("")`.
+ *
+ * Urutan fallback dibuat supaya build tidak pernah gagal tanpa konfigurasi:
+ * env manual → domain produksi Vercel → URL deployment → localhost.
+ */
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return explicit;
+
+  const prodDomain = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (prodDomain) return `https://${prodDomain}`;
+
+  const deploymentUrl = process.env.VERCEL_URL?.trim();
+  if (deploymentUrl) return `https://${deploymentUrl}`;
+
+  return "http://localhost:3000";
+}
+
+const siteUrl = resolveSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
