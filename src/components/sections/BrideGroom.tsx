@@ -5,41 +5,34 @@ import Reveal from "@/components/Reveal";
 import { couple } from "@/lib/data";
 
 /**
- * Bride & Groom — urutan mengikuti referensi: Fahmi lebih dulu, lalu Ade.
+ * Bride & Groom — panel teks di atas pelaminan yang memudar (meniru
+ * latar lengkung putih di mockup). Urutan mengikuti referensi: Fahmi
+ * lebih dulu, lalu Ade. Ilustrasi pasangan ditaruh di footer, jadi di
+ * sini fokus ke nama & orang tua.
  */
 export default function BrideGroom() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-cream to-[#f7edf0] px-6 py-24">
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-center opacity-25">
+    <section className="relative overflow-hidden bg-gradient-to-b from-cream via-[#faf3f5] to-cream px-6 py-24">
+      {/* pelaminan pucat sebagai latar lengkung */}
+      <div className="pointer-events-none absolute inset-x-0 top-[8%] z-0 mx-auto w-[150%] max-w-none -translate-x-[16.5%] opacity-[0.13]">
         <Image
-          src="/assets/floral-garland.webp"
+          src="/assets/stage-backdrop.webp"
           alt=""
           width={1400}
           height={1400}
-          sizes="100vw"
-          className="w-[130%] max-w-none"
+          sizes="150vw"
+          className="w-full"
         />
       </div>
 
-      <div className="relative mx-auto max-w-md text-center">
+      <div className="relative z-10 mx-auto max-w-md text-center">
         <Reveal>
           <p className="ornament-divider font-serif text-[11px] uppercase tracking-[0.3em] text-mustard">
             <span className="shrink-0">Bride &amp; Groom</span>
           </p>
         </Reveal>
 
-        <Reveal delay={0.12} className="mt-10">
-          <Image
-            src="/assets/couple-javanese.webp"
-            alt={`${couple.groom.shortName} & ${couple.bride.shortName}`}
-            width={990}
-            height={1400}
-            sizes="(min-width: 640px) 300px, 62vw"
-            className="mx-auto h-64 w-auto object-contain drop-shadow-xl sm:h-72"
-          />
-        </Reveal>
-
-        <Reveal delay={0.2} className="mt-8">
+        <Reveal delay={0.15} className="mt-12">
           <Person
             name={couple.groom.name}
             order={couple.groom.order}
@@ -47,13 +40,13 @@ export default function BrideGroom() {
           />
         </Reveal>
 
-        <Reveal delay={0.28}>
-          <span className="my-7 block font-script text-4xl text-mustard">
+        <Reveal delay={0.25}>
+          <span className="my-8 block font-script text-5xl text-mustard">
             &amp;
           </span>
         </Reveal>
 
-        <Reveal delay={0.34}>
+        <Reveal delay={0.32}>
           <Person
             name={couple.bride.name}
             order={couple.bride.order}

@@ -8,14 +8,10 @@ import { getGuestName } from "@/lib/guest";
 import Cover from "@/components/Cover";
 import MusicToggle from "@/components/MusicToggle";
 
-// Love Story — tujuh babak, mengikuti alur video.
-import SmaStory from "@/components/sections/SmaStory";
-import CollegeStory from "@/components/sections/CollegeStory";
-import FavoritePlace from "@/components/sections/FavoritePlace";
-import TogetherMoments from "@/components/sections/TogetherMoments";
-import Profession from "@/components/sections/Profession";
-import Umrah from "@/components/sections/Umrah";
-import Engagement from "@/components/sections/Engagement";
+// Love Story kini satu section berisi video (masih placeholder).
+// Komponen bab lama (SmaStory, CollegeStory, dst.) masih ada di repo
+// kalau sewaktu-waktu versi web-nya dibutuhkan lagi.
+import LoveStory from "@/components/sections/LoveStory";
 
 import QuranQuote from "@/components/sections/QuranQuote";
 import BrideGroom from "@/components/sections/BrideGroom";
@@ -51,13 +47,7 @@ export default function HomeClient() {
         aria-hidden={!opened}
       >
         {/* Love Story — cerita langsung dimulai begitu undangan dibuka */}
-        <SmaStory />
-        <CollegeStory />
-        <FavoritePlace />
-        <TogetherMoments />
-        <Profession />
-        <Umrah />
-        <Engagement />
+        <LoveStory />
 
         <QuranQuote />
         <BrideGroom />
@@ -66,12 +56,6 @@ export default function HomeClient() {
         <WeddingGift />
         <RSVPWishes guestName={guestName} />
         <Closing />
-
-        <footer className="bg-cream-deep px-6 py-8 text-center">
-          <p className="font-serif text-xs tracking-widest text-ink/40">
-            Made with love — Fahmi &amp; Ade, 2026
-          </p>
-        </footer>
       </main>
 
       <MusicToggle autoStart={opened} />

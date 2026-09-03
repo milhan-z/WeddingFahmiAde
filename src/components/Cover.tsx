@@ -5,18 +5,19 @@ import { motion } from "framer-motion";
 import { event } from "@/lib/data";
 
 /**
- * Halaman pembuka — meniru frame penutup video (02:47–02:51): pelaminan
- * yang memudar ke putih, sofa emas, pasangan berbusana ungu modern, dan
- * lockup judul "The Wedding of Ade & Fahmi".
+ * Halaman pembuka — meniru frame penutup video: pelaminan yang memudar
+ * ke putih, sofa emas, pasangan berbusana ungu modern.
  *
- * Nama tamu diisi lewat query link, contoh: /?to=Bapak%20Budi
+ * Layout dibagi tiga blok tegas: teks atas (shrink-0), panggung
+ * (flex-1 + overflow-hidden), tombol bawah (shrink-0). `overflow-hidden`
+ * itu yang penting — tanpa itu, sofa dan pasangan meluber ke atas di
+ * layar pendek dan menutupi nama tamu.
  *
- * Animasi masuk memakai CSS (.animate-rise-in / .animate-fade-in), bukan
- * framer-motion. Alasannya: animasi JS menggantung di opacity 0 kalau
- * requestAnimationFrame ter-throttle (tab background, in-app browser
- * WhatsApp) — dan di layar pertama undangan, itu berarti halaman kosong.
- * framer-motion tetap dipakai untuk animasi keluar, yang baru jalan
- * setelah tamu menekan tombol.
+ * Animasi masuk memakai CSS, bukan framer-motion: animasi JS menggantung
+ * di opacity 0 kalau requestAnimationFrame ter-throttle (tab background,
+ * in-app browser WhatsApp) — di layar pertama undangan itu berarti tamu
+ * melihat halaman kosong. framer-motion hanya dipakai untuk animasi
+ * keluar, yang jalan setelah tamu menekan tombol.
  */
 export default function Cover({
   guestName,
@@ -27,30 +28,51 @@ export default function Cover({
 }) {
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-gradient-to-b from-[#fdfbf7] via-[#faf4f6] to-[#f6eef1]"
+      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-gradient-to-b from-[#fdfbf7] via-[#faf4f6] to-[#f3e9ec]"
       exit={{ opacity: 0, transition: { duration: 0.9, ease: "easeInOut" } }}
     >
-      {/* ── PELAMINAN: dipucatkan sampai jadi lengkung putih lembut ── */}
-      <div className="animate-fade-in pointer-events-none absolute inset-x-0 bottom-[12%] mx-auto w-[145%] max-w-none -translate-x-[15.5%] opacity-[0.16]">
+      {/* pelaminan dipucatkan jadi lengkung putih lembut, di lapisan terbawah */}
+      <div className="animate-fade-in pointer-events-none absolute inset-x-0 top-[6%] z-0 mx-auto w-[150%] max-w-none -translate-x-[16.5%] opacity-[0.15]">
         <Image
           src="/assets/stage-backdrop.webp"
           alt=""
           width={1400}
           height={1400}
-          sizes="145vw"
+          sizes="150vw"
           priority
           className="w-full"
         />
       </div>
 
       {/* cahaya lembut di belakang judul */}
-      <div className="pointer-events-none absolute left-1/2 top-[6%] h-[42%] w-[120%] -translate-x-1/2 rounded-[50%] bg-white/70 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-[4%] z-0 h-[38%] w-[125%] -translate-x-1/2 rounded-[50%] bg-white/75 blur-3xl" />
 
-      {/* ── KONTEN ── */}
-      <div className="relative z-10 flex h-full w-full flex-col items-center px-6 pb-7 pt-[4.5svh] text-center">
-        {/* judul */}
+      {/* dahan berbunga membingkai sudut atas — motif utama mockup */}
+      <div className="animate-fade-in pointer-events-none absolute -left-[14%] -top-[3%] z-[5] w-[58%] max-w-[16rem] sm:w-[42%]">
+        <Image
+          src="/assets/branch-flowers.webp"
+          alt=""
+          width={1400}
+          height={1400}
+          sizes="(min-width: 640px) 42vw, 58vw"
+          className="w-full"
+        />
+      </div>
+      <div className="animate-fade-in pointer-events-none absolute -right-[14%] -top-[3%] z-[5] w-[58%] max-w-[16rem] -scale-x-100 sm:w-[42%]">
+        <Image
+          src="/assets/branch-flowers.webp"
+          alt=""
+          width={1400}
+          height={1400}
+          sizes="(min-width: 640px) 42vw, 58vw"
+          className="w-full"
+        />
+      </div>
+
+      {/* ── BLOK 1: teks ── */}
+      <div className="relative z-20 shrink-0 px-6 pt-[4svh] text-center">
         <div
-          className="animate-rise-in w-full max-w-[16.5rem] sm:max-w-xs"
+          className="animate-rise-in mx-auto w-full max-w-[15.5rem] sm:max-w-[17rem]"
           style={{ animationDelay: "0.15s" }}
         >
           <Image
@@ -58,13 +80,12 @@ export default function Cover({
             alt="The Wedding of Ade & Fahmi"
             width={1400}
             height={1400}
-            sizes="(min-width: 640px) 384px, 304px"
+            sizes="(min-width: 640px) 272px, 248px"
             priority
             className="w-full"
           />
         </div>
 
-        {/* tanggal + label undangan */}
         <div
           className="animate-rise-in -mt-1 flex flex-col items-center gap-1.5"
           style={{ animationDelay: "0.35s" }}
@@ -72,14 +93,13 @@ export default function Cover({
           <span className="font-serif text-sm tracking-[0.15em] text-maroon/85">
             {event.dateLabel}
           </span>
-          <span className="ornament-divider w-52 font-serif text-[9px] uppercase tracking-[0.32em] text-mustard">
+          <span className="ornament-divider w-52 font-serif text-[9px] uppercase tracking-[0.3em] text-mustard">
             <span className="shrink-0">Wedding Invitation</span>
           </span>
         </div>
 
-        {/* nama tamu */}
         <div
-          className="animate-rise-in mt-4 flex flex-col items-center gap-1"
+          className="animate-rise-in mt-5 flex flex-col items-center gap-1"
           style={{ animationDelay: "0.5s" }}
         >
           <span className="font-serif text-[10px] uppercase tracking-[0.32em] text-ink/45">
@@ -89,56 +109,59 @@ export default function Cover({
             {guestName || "Tamu Undangan"}
           </span>
         </div>
+      </div>
 
-        {/* ── PASANGAN DI SOFA ── */}
-        <div
-          className="animate-rise-in relative mt-3 flex min-h-0 w-full max-w-md flex-1 items-end justify-center"
-          style={{ animationDelay: "0.7s" }}
-        >
-          {/* sofa emas di belakang — sengaja lebih kecil dari pasangan
-              supaya proporsinya mengikuti frame video */}
-          <div className="absolute bottom-[10%] w-[66%] max-w-[17rem]">
+      {/* ── BLOK 2: panggung — dikurung supaya tidak pernah menimpa teks ── */}
+      <div
+        className="animate-rise-in relative z-10 min-h-0 w-full flex-1 overflow-hidden"
+        style={{ animationDelay: "0.7s" }}
+      >
+        {/* Panggung disusun berdasarkan TINGGI, bukan lebar. Kalau ukurannya
+            ditentukan lebar (mis. w-[62%]), di layar pendek lebar menang dan
+            gambar meluber ke atas lalu terpotong kepalanya. Dengan h-full +
+            w-auto, pasangan selalu utuh berapa pun tinggi panggungnya, dan
+            sofa ikut menyesuaikan karena diukur relatif terhadapnya. */}
+        <div className="absolute inset-0 flex items-end justify-center pb-[13%]">
+          <div className="relative h-[92%] max-h-full">
             <Image
               src="/assets/sofa-gold.webp"
               alt=""
               width={1400}
               height={1400}
-              sizes="(min-width: 640px) 272px, 66vw"
-              className="w-full"
+              sizes="(min-width: 640px) 360px, 90vw"
+              className="absolute bottom-[-6%] left-1/2 w-[132%] max-w-none -translate-x-1/2"
+            />
+            <Image
+              src="/assets/couple-modern.webp"
+              alt="Ade & Fahmi"
+              width={1000}
+              height={1400}
+              sizes="(min-width: 640px) 300px, 70vw"
+              priority
+              className="relative h-full w-auto object-contain drop-shadow-[0_14px_18px_rgba(92,31,46,0.18)]"
             />
           </div>
-
-          <Image
-            src="/assets/couple-modern.webp"
-            alt="Ade & Fahmi"
-            width={1000}
-            height={1400}
-            sizes="(min-width: 640px) 420px, 95vw"
-            priority
-            className="relative h-full w-auto max-w-[95%] object-contain drop-shadow-[0_16px_20px_rgba(92,31,46,0.2)]"
-          />
         </div>
 
-        {/* rangkaian bunga di kaki panggung */}
-        <div
-          className="animate-fade-in pointer-events-none absolute inset-x-0 bottom-[4.5rem] -z-10 mx-auto w-[130%] -translate-x-[11.5%] opacity-70"
-          style={{ animationDelay: "0.8s" }}
-        >
+        {/* rangkaian bunga menutup kaki panggung */}
+        <div className="animate-fade-in pointer-events-none absolute inset-x-0 bottom-0 mx-auto w-[135%] max-w-none -translate-x-[13%]">
           <Image
             src="/assets/floral-garland.webp"
             alt=""
             width={1400}
             height={1400}
-            sizes="130vw"
+            sizes="135vw"
             className="w-full"
           />
         </div>
+      </div>
 
-        {/* tombol buka */}
+      {/* ── BLOK 3: tombol ── */}
+      <div className="relative z-20 shrink-0 px-6 pb-[4svh] pt-2 text-center">
         <button
           onClick={onOpen}
           style={{ animationDelay: "0.95s" }}
-          className="animate-rise-in mt-4 flex shrink-0 items-center gap-2 rounded-full bg-maroon px-9 py-3.5 font-serif text-sm tracking-wide text-cream shadow-lg shadow-maroon/25 transition hover:bg-maroon-deep active:scale-[0.97]"
+          className="animate-rise-in inline-flex items-center gap-2 rounded-full bg-maroon px-9 py-3.5 font-serif text-sm tracking-wide text-cream shadow-lg shadow-maroon/25 transition hover:bg-maroon-deep active:scale-[0.97]"
         >
           <EnvelopeIcon />
           Buka Undangan

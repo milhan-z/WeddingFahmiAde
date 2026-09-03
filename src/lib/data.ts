@@ -20,6 +20,8 @@ export const couple = {
 };
 
 export const event = {
+  intro:
+    "Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i, untuk menghadiri acara pernikahan kami:",
   akad: {
     label: "Akad Nikah",
     day: "Sabtu",

@@ -24,9 +24,12 @@ export default function WeddingDetails() {
           <p className="ornament-divider font-serif text-[11px] uppercase tracking-[0.3em] text-mustard">
             <span className="shrink-0">Wedding Event</span>
           </p>
+          <p className="mx-auto mt-6 max-w-sm font-body text-base leading-relaxed text-ink/75">
+            {event.intro}
+          </p>
         </Reveal>
 
-        <Reveal delay={0.15} className="mt-10 space-y-6">
+        <Reveal delay={0.15} className="mt-8 space-y-6">
           <EventCard {...event.akad} />
           <EventCard {...event.resepsi} />
         </Reveal>
@@ -48,6 +51,17 @@ export default function WeddingDetails() {
               Buka Google Maps
             </a>
           </div>
+        </Reveal>
+
+        <Reveal delay={0.36} className="mt-12">
+          <Image
+            src="/assets/boat-candid.webp"
+            alt="Fahmi & Ade"
+            width={1400}
+            height={1400}
+            sizes="(min-width: 640px) 360px, 80vw"
+            className="mx-auto w-full max-w-xs object-contain drop-shadow-lg"
+          />
         </Reveal>
       </div>
     </section>
