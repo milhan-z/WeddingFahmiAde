@@ -88,8 +88,8 @@ function StoryArt({
 
       {/* header */}
       <div className="absolute left-0 top-[-320px] size-[1080px]">{img("ranting.webp")}</div>
-      <div className="absolute left-[63px] top-[440px] size-[954px] opacity-90">{img("title-a.webp")}</div>
-      <p className="absolute left-[370px] top-[1134px] whitespace-nowrap text-[60.7px] font-bold text-white">12.09.2026</p>
+      <div className="absolute left-[63px] top-[440px] size-[954px]">{img("title-white.webp")}</div>
+      <p className="absolute left-1/2 top-[1150px] -translate-x-1/2 whitespace-nowrap text-[60.7px] font-bold tracking-[0.12em] text-white">12 . 09 . 2026</p>
       <div className="absolute left-[-302px] top-[1435px] size-[880px]">{img("runout.webp")}</div>
       <div className="absolute left-[476px] top-[1435px] size-[880px]">{img("runout.webp")}</div>
       <div className="absolute left-[100px] top-[1465px] size-[880px]">{img("runout.webp")}</div>
@@ -241,7 +241,9 @@ function CoverScaler({ children, onOpen }: { children: React.ReactNode; onOpen: 
     const update = () => {
       const w = el.clientWidth;
       const h = el.clientHeight;
-      setS(Math.min(w / DESIGN_W, h / COVER_H));
+      // MAX = isi penuh layar (tanpa bilah putih); sisi yang lebih sedikit
+      // dipangkas oleh overflow-hidden — tepi kanvas cuma langit & bunga.
+      setS(Math.max(w / DESIGN_W, h / COVER_H));
     };
     update();
     const ro = new ResizeObserver(update);
