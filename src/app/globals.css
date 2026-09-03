@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+:root {
+  --color-cream: #fbf5ea;
+  --color-cream-deep: #f3e9d7;
+  --color-maroon: #5c1f2e;
+  --color-maroon-deep: #3d1420;
+  --color-mustard: #c8973f;
+  --color-olive: #6b7a4f;
+  --color-ink: #2e2a25;
+}
+
+@theme inline {
+  --font-serif: "Playfair Display", "Cormorant Garamond", serif;
+  --font-body: "Cormorant Garamond", serif;
+  --font-script: "Alex Brush", cursive;
+
+  --color-cream: var(--color-cream);
+  --color-cream-deep: var(--color-cream-deep);
+  --color-maroon: var(--color-maroon);
+  --color-maroon-deep: var(--color-maroon-deep);
+  --color-mustard: var(--color-mustard);
+  --color-olive: var(--color-olive);
+  --color-ink: var(--color-ink);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-mustard);
+  color: var(--color-cream);
+}
+
+/* thin decorative divider */
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.ornament-divider::before,
+.ornament-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-mustard),
+    transparent
+  );
+}
+
+/* gentle floating animation for decorative elements */
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-float-soft {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0% {
+    transform: translateX(-6%);
+  }
+  100% {
+    transform: translateX(6%);
+  }
+}
+.animate-drift {
+  animation: drift 14s ease-in-out infinite alternate;
+}
+
+/* dahan/daun bergoyang pelan — poros di ujung yang menempel ke tepi layar */
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-1.6deg);
+  }
+  50% {
+    transform: rotate(1.6deg);
+  }
+}
+.animate-sway {
+  transform-origin: top left;
+  animation: sway 9s ease-in-out infinite;
+}
+.animate-sway-slow {
+  transform-origin: bottom center;
+  animation: sway 13s ease-in-out infinite;
+}
+
+/* denyut cahaya matahari, sangat halus */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 8s ease-in-out infinite;
+}
+
+/* hormati preferensi pengguna yang sensitif terhadap gerakan */
+@media (prefers-reduced-motion: reduce) {
+  .animate-sway,
+  .animate-sway-slow,
+  .animate-glow-pulse,
+  .animate-float-soft,
+  .animate-drift {
+    animation: none;
+  }
+}
+
+/* hide scrollbar on cover overlay while keeping scrollability */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
