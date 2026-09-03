@@ -6,19 +6,19 @@ import { useState } from "react";
 
 import Cover from "@/components/Cover";
 import MusicToggle from "@/components/MusicToggle";
+import JourneyInvite from "@/components/JourneyInvite";
 import Hero from "@/components/sections/Hero";
-import SmaStory from "@/components/sections/SmaStory";
-import CollegeStory from "@/components/sections/CollegeStory";
-import FavoritePlace from "@/components/sections/FavoritePlace";
-import TogetherMoments from "@/components/sections/TogetherMoments";
-import Profession from "@/components/sections/Profession";
-import Umrah from "@/components/sections/Umrah";
-import Engagement from "@/components/sections/Engagement";
 import WeddingDetails from "@/components/sections/WeddingDetails";
 import QuranQuote from "@/components/sections/QuranQuote";
 import Closing from "@/components/sections/Closing";
 import RSVPWishes from "@/components/sections/RSVPWishes";
 
+/**
+ * Halaman undangan utama — sengaja ringkas: yang dibutuhkan hampir semua
+ * tamu (tanggal, lokasi, RSVP). Tujuh bab cerita dipindah ke /journey
+ * supaya tamu yang cuma mau konfirmasi kehadiran tidak perlu memuat
+ * tujuh scene ilustrasi.
+ */
 export default function HomeClient() {
   const params = useSearchParams();
   const guestName = decodeURIComponent(params.get("to") ?? "").replace(
@@ -42,13 +42,7 @@ export default function HomeClient() {
         aria-hidden={!opened}
       >
         <Hero />
-        <SmaStory />
-        <CollegeStory />
-        <FavoritePlace />
-        <TogetherMoments />
-        <Profession />
-        <Umrah />
-        <Engagement />
+        <JourneyInvite guestName={guestName} />
         <WeddingDetails />
         <QuranQuote />
         <Closing />

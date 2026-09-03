@@ -2,8 +2,21 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { couple } from "@/lib/data";
 
+/**
+ * Halaman pembuka — meniru frame penutup video (02:47–02:51): pelaminan
+ * yang memudar ke putih, sofa emas, pasangan berbusana ungu modern, dan
+ * lockup judul "The Wedding of Ade & Fahmi".
+ *
+ * Nama tamu diisi lewat query link, contoh: /?to=Bapak%20Budi
+ *
+ * Animasi masuk memakai CSS (.animate-rise-in / .animate-fade-in), bukan
+ * framer-motion. Alasannya: animasi JS menggantung di opacity 0 kalau
+ * requestAnimationFrame ter-throttle (tab background, in-app browser
+ * WhatsApp) — dan di layar pertama undangan, itu berarti halaman kosong.
+ * framer-motion tetap dipakai untuk animasi keluar, yang baru jalan
+ * setelah tamu menekan tombol.
+ */
 export default function Cover({
   guestName,
   onOpen,
@@ -13,104 +26,109 @@ export default function Cover({
 }) {
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-cream"
+      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-gradient-to-b from-[#fdfbf7] via-[#faf4f6] to-[#f6eef1]"
       exit={{ opacity: 0, transition: { duration: 0.9, ease: "easeInOut" } }}
     >
-      {/* soft sky backdrop */}
-      <div className="absolute inset-0">
+      {/* ── PELAMINAN: dipucatkan sampai jadi lengkung putih lembut ── */}
+      <div className="animate-fade-in pointer-events-none absolute inset-x-0 bottom-[12%] mx-auto w-[145%] max-w-none -translate-x-[15.5%] opacity-[0.16]">
         <Image
-          src="/assets/cloud-light.webp"
+          src="/assets/stage-backdrop.webp"
           alt=""
-          fill
+          width={1400}
+          height={1400}
+          sizes="145vw"
           priority
-          className="object-cover opacity-70"
+          className="w-full"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-cream/10 via-cream/60 to-cream" />
       </div>
 
-      {/* floating seagulls */}
-      <motion.div
-        className="absolute left-[8%] top-[14%] w-16 opacity-80 animate-float-soft"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.8 }}
-        transition={{ delay: 0.4, duration: 1.2 }}
-      >
-        <Image src="/assets/seagull.webp" alt="" width={120} height={120} />
-      </motion.div>
-      <motion.div
-        className="absolute right-[10%] top-[24%] w-10 opacity-70 animate-float-soft"
-        style={{ animationDelay: "1.5s" }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.7 }}
-        transition={{ delay: 0.7, duration: 1.2 }}
-      >
-        <Image src="/assets/seagull.webp" alt="" width={90} height={90} />
-      </motion.div>
+      {/* cahaya lembut di belakang judul */}
+      <div className="pointer-events-none absolute left-1/2 top-[6%] h-[42%] w-[120%] -translate-x-1/2 rounded-[50%] bg-white/70 blur-3xl" />
 
-      <div className="relative z-10 flex w-full max-w-md flex-col items-center px-6 text-center">
-        <motion.p
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="font-serif text-xs tracking-[0.35em] text-maroon/70 uppercase"
-        >
-          The Wedding of
-        </motion.p>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.9 }}
-          className="mt-3 font-script text-6xl text-maroon sm:text-7xl"
-        >
-          Ade &amp; Fahmi
-        </motion.h1>
-
-        {/* floral arch frame */}
-        <motion.div
-          className="relative mt-8 flex h-72 w-64 items-end justify-center sm:h-80 sm:w-72"
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6, duration: 1 }}
+      {/* ── KONTEN ── */}
+      <div className="relative z-10 flex h-full w-full flex-col items-center px-6 pb-7 pt-[4.5svh] text-center">
+        {/* judul */}
+        <div
+          className="animate-rise-in w-full max-w-[16.5rem] sm:max-w-xs"
+          style={{ animationDelay: "0.15s" }}
         >
           <Image
-            src="/assets/floral-arch.webp"
-            alt=""
-            fill
-            className="object-contain"
+            src="/assets/wedding-title.webp"
+            alt="The Wedding of Ade & Fahmi"
+            width={1400}
+            height={1400}
+            sizes="(min-width: 640px) 384px, 304px"
+            priority
+            className="w-full"
           />
-          <div className="relative z-10 mb-10 flex flex-col items-center gap-1">
-            <span className="font-serif text-[11px] uppercase tracking-[0.3em] text-ink/60">
-              Kepada Yth.
-            </span>
-            <span className="max-w-[11rem] font-serif text-lg font-semibold text-maroon">
-              {guestName || "Bapak / Ibu / Saudara/i"}
-            </span>
-          </div>
-        </motion.div>
+        </div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
-          className="mt-6 max-w-xs font-body text-sm italic text-ink/70"
+        {/* nama tamu */}
+        <div
+          className="animate-rise-in -mt-2 flex flex-col items-center gap-1"
+          style={{ animationDelay: "0.5s" }}
         >
-          Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i
-          untuk hadir di hari bahagia kami, {couple.bride.shortName} &amp;{" "}
-          {couple.groom.shortName}.
-        </motion.p>
+          <span className="font-serif text-[10px] uppercase tracking-[0.32em] text-ink/45">
+            Kepada Yth.
+          </span>
+          <span className="max-w-[16rem] font-serif text-lg leading-snug text-maroon sm:text-xl">
+            {guestName || "Bapak / Ibu / Saudara/i"}
+          </span>
+        </div>
 
-        <motion.button
+        {/* ── PASANGAN DI SOFA ── */}
+        <div
+          className="animate-rise-in relative mt-3 flex min-h-0 w-full max-w-md flex-1 items-end justify-center"
+          style={{ animationDelay: "0.7s" }}
+        >
+          {/* sofa emas di belakang — sengaja lebih kecil dari pasangan
+              supaya proporsinya mengikuti frame video */}
+          <div className="absolute bottom-[10%] w-[66%] max-w-[17rem]">
+            <Image
+              src="/assets/sofa-gold.webp"
+              alt=""
+              width={1400}
+              height={1400}
+              sizes="(min-width: 640px) 272px, 66vw"
+              className="w-full"
+            />
+          </div>
+
+          <Image
+            src="/assets/couple-modern.webp"
+            alt="Ade & Fahmi"
+            width={1000}
+            height={1400}
+            sizes="(min-width: 640px) 420px, 95vw"
+            priority
+            className="relative h-full w-auto max-w-[95%] object-contain drop-shadow-[0_16px_20px_rgba(92,31,46,0.2)]"
+          />
+        </div>
+
+        {/* rangkaian bunga di kaki panggung */}
+        <div
+          className="animate-fade-in pointer-events-none absolute inset-x-0 bottom-[4.5rem] -z-10 mx-auto w-[130%] -translate-x-[11.5%] opacity-70"
+          style={{ animationDelay: "0.8s" }}
+        >
+          <Image
+            src="/assets/floral-garland.webp"
+            alt=""
+            width={1400}
+            height={1400}
+            sizes="130vw"
+            className="w-full"
+          />
+        </div>
+
+        {/* tombol buka */}
+        <button
           onClick={onOpen}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.7 }}
-          whileTap={{ scale: 0.96 }}
-          className="mt-8 flex items-center gap-2 rounded-full bg-maroon px-8 py-3 font-serif text-sm tracking-wide text-cream shadow-lg shadow-maroon/20 transition hover:bg-maroon-deep"
+          style={{ animationDelay: "0.95s" }}
+          className="animate-rise-in mt-4 flex shrink-0 items-center gap-2 rounded-full bg-maroon px-9 py-3.5 font-serif text-sm tracking-wide text-cream shadow-lg shadow-maroon/25 transition hover:bg-maroon-deep active:scale-[0.97]"
         >
           <EnvelopeIcon />
           Buka Undangan
-        </motion.button>
+        </button>
       </div>
     </motion.div>
   );

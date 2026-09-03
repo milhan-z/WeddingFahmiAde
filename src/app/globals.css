@@ -85,6 +85,34 @@ body {
   animation: drift 14s ease-in-out infinite alternate;
 }
 
+/* Animasi masuk halaman pembuka.
+   Sengaja pakai CSS, bukan framer-motion: animasi berbasis JS menggantung di
+   state awal (opacity 0) kalau requestAnimationFrame ter-throttle — misalnya
+   tab yang direstore dari background, atau in-app browser WhatsApp. Untuk
+   layar pertama undangan, gagalnya berarti tamu melihat halaman kosong. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-rise-in {
+  animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+.animate-fade-in {
+  animation: fade-in 1.3s ease-out both;
+}
+
 /* dahan/daun bergoyang pelan — poros di ujung yang menempel ke tepi layar */
 @keyframes sway {
   0%,
@@ -126,7 +154,9 @@ body {
   .animate-sway-slow,
   .animate-glow-pulse,
   .animate-float-soft,
-  .animate-drift {
+  .animate-drift,
+  .animate-rise-in,
+  .animate-fade-in {
     animation: none;
   }
 }
