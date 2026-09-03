@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
+import { getGuestName } from "@/lib/guest";
 import Cover from "@/components/Cover";
 import MusicToggle from "@/components/MusicToggle";
 import JourneyInvite from "@/components/JourneyInvite";
@@ -21,10 +22,7 @@ import RSVPWishes from "@/components/sections/RSVPWishes";
  */
 export default function HomeClient() {
   const params = useSearchParams();
-  const guestName = decodeURIComponent(params.get("to") ?? "").replace(
-    /\+/g,
-    " "
-  );
+  const guestName = getGuestName(params);
   const [opened, setOpened] = useState(false);
 
   return (

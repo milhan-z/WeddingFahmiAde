@@ -2,15 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { withGuest } from "@/lib/guest";
 
 /**
  * Ajakan membuka halaman cerita. Nama tamu ikut dibawa lewat query supaya
  * tombol "kembali ke undangan" di /journey tidak kehilangan sapaannya.
  */
 export default function JourneyInvite({ guestName }: { guestName: string }) {
-  const href = guestName
-    ? `/journey?to=${encodeURIComponent(guestName)}`
-    : "/journey";
+  const href = withGuest("/journey", guestName);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-cream via-[#f7edf0] to-cream px-6 py-20">

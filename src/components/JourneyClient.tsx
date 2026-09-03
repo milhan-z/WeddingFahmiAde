@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import { getGuestName, withGuest } from "@/lib/guest";
 import MusicToggle from "@/components/MusicToggle";
 import SmaStory from "@/components/sections/SmaStory";
 import CollegeStory from "@/components/sections/CollegeStory";
@@ -18,13 +19,8 @@ import Engagement from "@/components/sections/Engagement";
  */
 export default function JourneyClient() {
   const params = useSearchParams();
-  const guestName = decodeURIComponent(params.get("to") ?? "").replace(
-    /\+/g,
-    " "
-  );
-  const backHref = guestName
-    ? `/?to=${encodeURIComponent(guestName)}`
-    : "/";
+  const guestName = getGuestName(params);
+  const backHref = withGuest("/", guestName);
 
   return (
     <>
