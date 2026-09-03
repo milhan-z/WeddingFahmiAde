@@ -8,6 +8,9 @@
   --color-mustard: #c8973f;
   --color-olive: #6b7a4f;
   --color-ink: #2e2a25;
+  /* zona cerita (Figma "Layout Web") — langit cyan */
+  --color-sky: #adfffe;
+  --color-sky-deep: #7fe4ee;
 }
 
 @theme inline {
@@ -22,6 +25,8 @@
   --color-mustard: var(--color-mustard);
   --color-olive: var(--color-olive);
   --color-ink: var(--color-ink);
+  --color-sky: var(--color-sky);
+  --color-sky-deep: var(--color-sky-deep);
 }
 
 html {

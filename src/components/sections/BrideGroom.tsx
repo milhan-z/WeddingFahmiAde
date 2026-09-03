@@ -1,44 +1,34 @@
 "use client";
 
-import Image from "next/image";
 import Reveal from "@/components/Reveal";
 import { couple } from "@/lib/data";
 
 /**
- * Bride & Groom — mengikuti frame Figma "Layout Web": teks pembuka
- * (Assalamualaikum...), lalu tiap mempelai dengan nama + orang tua +
- * tombol Instagram, dipisah "&". Latar pelaminan pucat sebagai lengkung.
+ * Bride & Groom — mengikuti frame Figma "Layout Web": kartu putih beratap
+ * lengkung (arch) di atas latar langit cyan, teks pembuka Assalamualaikum,
+ * lalu tiap mempelai (nama + orang tua + tombol Instagram hitam), dipisah "&".
  */
 export default function BrideGroom() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-cream via-[#faf3f5] to-cream px-6 py-24">
-      <div className="pointer-events-none absolute inset-x-0 top-[8%] z-0 mx-auto w-[150%] max-w-none -translate-x-[16.5%] opacity-[0.13]">
-        <Image
-          src="/assets/stage-backdrop.webp"
-          alt=""
-          width={1400}
-          height={1400}
-          sizes="150vw"
-          className="w-full"
-        />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-md text-center">
+    <section className="bg-sky px-5 py-16">
+      <div className="mx-auto max-w-md overflow-hidden rounded-t-[45%] rounded-b-[2rem] bg-white px-7 pb-12 pt-24 text-center shadow-[0_18px_40px_rgba(46,42,37,0.12)]">
         <Reveal>
-          <p className="ornament-divider font-serif text-[11px] uppercase tracking-[0.3em] text-mustard">
-            <span className="shrink-0">Bride &amp; Groom</span>
-          </p>
-          <p className="mx-auto mt-6 max-w-sm font-body text-base leading-relaxed text-ink/75">
+          <h2 className="font-serif text-3xl font-semibold leading-tight text-ink">
+            Bride &amp;
+            <br />
+            Groom
+          </h2>
+          <p className="mx-auto mt-5 max-w-sm font-body text-sm leading-relaxed text-ink/70">
             {couple.intro}
           </p>
         </Reveal>
 
-        <Reveal delay={0.15} className="mt-12">
+        <Reveal delay={0.15} className="mt-10">
           <Person {...couple.groom} />
         </Reveal>
 
         <Reveal delay={0.25}>
-          <span className="my-8 block font-script text-5xl text-mustard">
+          <span className="my-6 block font-script text-6xl text-ink/80">
             &amp;
           </span>
         </Reveal>
@@ -66,19 +56,20 @@ function Person({
 }) {
   return (
     <div>
-      <p className="font-script text-3xl text-mustard">{shortName}</p>
-      <h3 className="mt-1 font-serif text-2xl font-semibold text-maroon sm:text-3xl">
+      <p className="font-script text-4xl text-maroon">{shortName}</p>
+      <h3 className="mt-1 font-serif text-2xl font-semibold text-ink sm:text-[1.7rem]">
         {name}
       </h3>
-      <p className="mt-3 font-body text-sm text-ink/60">{order}</p>
-      <p className="font-body text-base text-ink/80">{parents}</p>
+      <p className="mx-auto mt-3 max-w-[16rem] font-body text-sm leading-relaxed text-ink/65">
+        {order} {parents}
+      </p>
 
       {instagram && (
         <a
           href={`https://instagram.com/${instagram}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-maroon px-4 py-1.5 font-serif text-xs tracking-wide text-cream transition hover:bg-maroon-deep active:scale-[0.97]"
+          className="mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2 font-sans text-xs font-medium tracking-wide text-white transition hover:opacity-90 active:scale-[0.97]"
         >
           <InstagramIcon />
           Instagram
@@ -90,10 +81,10 @@ function Person({
 
 function InstagramIcon() {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
-      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="currentColor" strokeWidth="1.6" />
-      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.6" />
-      <circle cx="17.3" cy="6.7" r="1.2" fill="currentColor" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="17.4" cy="6.6" r="1.3" fill="currentColor" />
     </svg>
   );
 }

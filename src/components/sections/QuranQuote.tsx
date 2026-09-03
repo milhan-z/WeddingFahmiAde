@@ -7,7 +7,7 @@ import { quranQuote } from "@/lib/data";
 /** "We Found Love" — ayat pembuka, section pertama setelah Love Story. */
 export default function QuranQuote() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#f7edf0] via-cream to-cream px-6 py-24">
+    <section className="relative overflow-hidden bg-sky px-6 py-24">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center opacity-20">
         <Image
           src="/assets/branch-flowers.webp"

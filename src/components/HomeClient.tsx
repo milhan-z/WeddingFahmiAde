@@ -15,6 +15,7 @@ import LoveStory from "@/components/sections/LoveStory";
 
 import QuranQuote from "@/components/sections/QuranQuote";
 import BrideGroom from "@/components/sections/BrideGroom";
+import SceneSeagull from "@/components/sections/SceneSeagull";
 import SaveTheDate from "@/components/sections/SaveTheDate";
 import WeddingDetails from "@/components/sections/WeddingDetails";
 import WeddingGift from "@/components/sections/WeddingGift";
@@ -51,6 +52,7 @@ export default function HomeClient() {
 
         <QuranQuote />
         <BrideGroom />
+        <SceneSeagull />
         <SaveTheDate />
         <WeddingDetails />
         <WeddingGift />
