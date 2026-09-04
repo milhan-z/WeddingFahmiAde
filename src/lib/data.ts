@@ -12,7 +12,7 @@ export const couple = {
     order: "Putra Kedua dari",
     parents: "Bapak H. Ramli & Ibu Hj. Murtining",
     // TODO: isi username Instagram (tanpa @). Kosongkan kalau tak ada tombol.
-    instagram: "https://www.instagram.com/fahmimuzakky_?igsi=eWR0ZnIwaW9nNDg5",
+    instagram: "fahmimuzakky",
   },
   bride: {
     name: "Ade Fitri Kurniasih",
