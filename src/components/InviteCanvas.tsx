@@ -396,15 +396,30 @@ function StoryContent({ guestName }: { guestName: string }) {
  *   z-20 pasangan candid
  *   z-30 dahan + bunga — menimpa perbatasan sehingga peralihannya menyatu
  */
+/**
+ * Scene transisi: pasangan candid di taman, lalu turun ke zona gelap.
+ *
+ * Pasangan + dedaunan + semak dipakai sebagai SATU aset gabungan
+ * (scene-couple.webp) — hasil komposisi dari mempelai — jadi tidak perlu
+ * menebak-nebak posisi tiap rumpun daun lagi.
+ *
+ * Lapisan (belakang -> depan):
+ *   z-0  kartu putih (cyan tetap terlihat di tepi, seperti kartu lain)
+ *   z-5  dasar gelap (Lantau) — DI BAWAH dedaunan, bukan memotong lurus
+ *   z-10 scene pasangan
+ *   z-30 dahan + hamparan bunga yang menutup perbatasan
+ */
 function TransitionScene() {
   return (
-    <div className="relative w-[1080px] overflow-hidden" style={{ height: 1420, background: CYAN }}>
-      {/* latar gelap bawah — sengaja di lapisan PALING BAWAH agar tertutup
-          dedaunan & dahan, bukan memotong lurus */}
+    <div className="relative w-[1080px] overflow-hidden" style={{ height: 1360, background: CYAN }}>
+      {/* kartu putih di belakang, senada kartu konten lain */}
+      <div className="absolute left-[89px] top-[-260px] z-0 h-[1290px] w-[903px] rounded-b-[240px] bg-white" />
+
+      {/* dasar gelap */}
       <div
-        className="absolute inset-x-0 bottom-0 z-0"
+        className="absolute inset-x-0 bottom-0 z-[5]"
         style={{
-          height: 520,
+          height: 400,
           backgroundColor: "#28110b",
           backgroundImage: `url(${A}/lantau.webp)`,
           backgroundSize: "1080px auto",
@@ -413,20 +428,28 @@ function TransitionScene() {
         }}
       />
 
-      {/* semak: duduk rendah di belakang pasangan, melebar ke tepi */}
-      <div className="absolute left-[-260px] top-[560px] z-10 size-[860px]">{img("kk.webp")}</div>
-      <div className="absolute left-[500px] top-[540px] z-10 size-[880px]">{img("kk.webp")}</div>
-      <div className="absolute left-[170px] top-[620px] z-10 size-[760px]">{img("kk.webp")}</div>
-
-      {/* pasangan candid */}
-      <div className="absolute left-1/2 top-[250px] z-20 h-[1000px] w-[1000px] -translate-x-1/2">
-        {img("slenei.webp")}
+      {/* pasangan + dedaunan + semak (satu aset) */}
+      <div className="absolute left-1/2 top-[90px] z-10 w-[1120px] -translate-x-1/2">
+        <img
+          src={`${A}/scene-couple.webp`}
+          alt="Fahmi & Ade"
+          loading="lazy"
+          decoding="async"
+          className="w-full max-w-none"
+        />
       </div>
 
-      {/* dahan + bunga menimpa perbatasan cyan/gelap */}
-      <div className="absolute left-[-6px] top-[760px] z-30 size-[1080px]">{img("ranting.webp")}</div>
-      <div className="absolute left-[-210px] top-[830px] z-30 size-[720px]">{img("runout.webp")}</div>
-      <div className="absolute left-[560px] top-[820px] z-30 size-[720px]">{img("runout.webp")}</div>
+      {/* dahan + hamparan bunga menutup perbatasan taman -> zona gelap.
+          Dipakai flower-bed (garland horizontal) karena `runout` hanyalah
+          semak hijau polos — tidak akan memberi hamparan bunga seperti
+          rancangan. Dua lapis, sedikit bergeser, agar rapat. */}
+      <div className="absolute left-[-6px] top-[680px] z-30 size-[1080px]">{img("ranting.webp")}</div>
+      <div className="absolute inset-x-0 top-[790px] z-[31] mx-auto w-[1260px] max-w-none -translate-x-[8%]">
+        <img src={`${A}/flower-bed.webp`} alt="" loading="lazy" decoding="async" className="w-full max-w-none" />
+      </div>
+      <div className="absolute inset-x-0 top-[856px] z-[32] mx-auto w-[1340px] max-w-none -translate-x-[12%]">
+        <img src={`${A}/flower-bed.webp`} alt="" loading="lazy" decoding="async" className="w-full max-w-none -scale-x-100" />
+      </div>
     </div>
   );
 }
