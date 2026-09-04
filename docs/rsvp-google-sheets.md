@@ -18,8 +18,12 @@ link ke tamu sebelum langkah di bawah selesai dan uji coba berhasil.
 ## 1. Buat spreadsheet
 
 Buat Google Spreadsheet baru. Tab-nya tidak perlu diapa-apakan — skrip di
-bawah akan membuat tab `RSVP` beserta headernya sendiri saat kiriman pertama
+bawah akan menamai tab `RSVP` beserta headernya sendiri saat kiriman pertama
 masuk.
+
+> Nama **tab** (di kiri bawah), bukan nama berkas. Keduanya beda, dan
+> `getSheetByName` peka huruf besar/kecil: berkas boleh bernama apa saja,
+> tapi tabnya harus persis `RSVP`.
 
 ## 2. Tempel Apps Script
 
@@ -46,7 +50,12 @@ function sheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(SHEET_NAME);
   if (!sh) {
-    sh = ss.insertSheet(SHEET_NAME);
+    // Tab bawaan Google bernama "Sheet1" / "Lembar1", bukan "RSVP" -- ini
+    // penyebab paling sering skrip gagal. Kalau spreadsheet cuma punya satu
+    // tab, pakai tab itu dan ganti namanya; jangan bikin tab kedua yang
+    // membingungkan (dan bikin header yang sudah diisi jadi terlihat hilang).
+    const all = ss.getSheets();
+    sh = all.length === 1 ? all[0].setName(SHEET_NAME) : ss.insertSheet(SHEET_NAME);
   }
   if (sh.getLastRow() === 0) {
     sh.appendRow(HEADER);
