@@ -1,28 +1,67 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { withGuest } from "@/lib/guest";
-import { couple, event } from "@/lib/data";
 
 /** Sama dengan batas di lib/guest.ts — dipakai untuk memperingatkan lebih awal. */
 const MAX_NAME_LENGTH = 60;
 
 const DEFAULT_TEMPLATE = `Bismillahirrahmanirrahim.
 
-Kepada Yth. {nama}
+Kepada Yth.
+Bapak/Ibu/Saudara/i
+*{nama}*
 
-Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami:
+*Assalamualaikum Warahmatullahi Wabarakatuh*
 
-${couple.bride.shortName} & ${couple.groom.shortName}
-${event.akad.day}, ${event.akad.date}
-${event.location.name}
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, untuk menghadiri acara pernikahan kami.
 
-Undangan lengkap dapat dibuka di:
+*Berikut link undangan kami*, untuk info lengkap dari acara, bisa kunjungi :
+
 {link}
 
-Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
+Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
 
-Terima kasih.`;
+*Wassalamualaikum Warahmatullahi Wabarakatuh*
+
+Terima Kasih
+
+Hormat kami,
+Ade & Fahmi
+____________________`;
+
+/* ── Simpan di browser ─────────────────────────────────────────────────
+   Template & daftar nama disimpan di localStorage supaya tidak hilang saat
+   halaman ditutup — menyebar undangan itu kerjaan berhari-hari, bukan sekali
+   duduk. Sengaja localStorage, bukan database: ini halaman alat pribadi,
+   datanya tidak perlu dibagi antar-perangkat, dan draf pesan mempelai tidak
+   ada gunanya disimpan di server.
+
+   Dibaca lewat useSyncExternalStore, bukan effect+setState. Dengan
+   getServerSnapshot yang mengembalikan null, React memakai nilai bawaan saat
+   hidrasi lalu merender ulang dengan nilai tersimpan — jadi tidak ada
+   ketidakcocokan hidrasi, dan tidak melanggar aturan set-state-in-effect. */
+const KEY = { template: "wa-template", names: "wa-names" } as const;
+
+function readStore(key: string) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    /* mode privat / site data diblokir — anggap belum ada simpanan */
+    return null;
+  }
+}
+
+function writeStore(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    /* kuota penuh atau penyimpanan diblokir: biarkan, halaman tetap jalan */
+  }
+}
+
+/** Tidak ada event localStorage untuk tab ini sendiri; cukup no-op. */
+const noSubscribe = () => () => {};
 
 type Row = {
   nama: string;
@@ -33,11 +72,40 @@ type Row = {
 };
 
 export default function LinkGenerator() {
-  const [raw, setRaw] = useState(
-    "Bapak Budi Santoso\nKeluarga Bapak & Ibu Sari\nFahmi Muzakky"
+  const savedNames = useSyncExternalStore(
+    noSubscribe,
+    () => readStore(KEY.names),
+    () => null
   );
-  const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
+  const savedTemplate = useSyncExternalStore(
+    noSubscribe,
+    () => readStore(KEY.template),
+    () => null
+  );
+
+  // Ketikan terbaru menang; kalau belum ada, pakai simpanan; kalau itu pun
+  // belum ada, pakai bawaan.
+  const [rawDraft, setRawDraft] = useState<string | null>(null);
+  const [templateDraft, setTemplateDraft] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+
+  const raw = rawDraft ?? savedNames ?? "";
+  const template = templateDraft ?? savedTemplate ?? DEFAULT_TEMPLATE;
+
+  const setRaw = useCallback((v: string) => {
+    setRawDraft(v);
+    writeStore(KEY.names, v);
+  }, []);
+
+  const setTemplate = useCallback((v: string) => {
+    setTemplateDraft(v);
+    writeStore(KEY.template, v);
+  }, []);
+
+  const resetTemplate = useCallback(() => {
+    setTemplateDraft(DEFAULT_TEMPLATE);
+    writeStore(KEY.template, DEFAULT_TEMPLATE);
+  }, []);
 
   // origin dibaca langsung dari browser (bukan lewat effect+setState, yang
   // memicu render berantai) supaya link otomatis benar baik di localhost
@@ -93,6 +161,10 @@ export default function LinkGenerator() {
           otomatis — encoding karakter seperti <code>&amp;</code> dan{" "}
           <code>%</code> sudah ditangani.
         </p>
+        <p className="mt-1 text-xs text-ink/45">
+          Daftar nama &amp; template tersimpan otomatis di browser ini, jadi
+          aman ditutup dan dilanjutkan besok.
+        </p>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -111,11 +183,22 @@ export default function LinkGenerator() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink/50">
-            Template pesan —{" "}
-            <code className="normal-case">{"{nama}"}</code> dan{" "}
-            <code className="normal-case">{"{link}"}</code> diganti otomatis
-          </label>
+          <div className="mb-1.5 flex items-baseline justify-between gap-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-ink/50">
+              Template pesan —{" "}
+              <code className="normal-case">{"{nama}"}</code> dan{" "}
+              <code className="normal-case">{"{link}"}</code> diganti otomatis
+            </label>
+            {template !== DEFAULT_TEMPLATE && (
+              <button
+                type="button"
+                onClick={resetTemplate}
+                className="shrink-0 text-xs text-ink/45 underline underline-offset-2 hover:text-maroon"
+              >
+                Kembalikan ke bawaan
+              </button>
+            )}
+          </div>
           <textarea
             value={template}
             onChange={(e) => setTemplate(e.target.value)}
