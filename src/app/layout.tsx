@@ -60,7 +60,28 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Wedding of Ade & Fahmi",
     description: "Sabtu, 12 September 2026 — Bojongsari, Depok",
-    images: ["/assets/journey-title.webp"],
+    type: "website",
+    locale: "id_ID",
+    /* JPEG, bukan WebP: WhatsApp — jalur sebar utama undangan ini —
+       kerap gagal membuat pratinjau dari WebP. Ukuran ditahan di bawah
+       300KB karena di atas itu WhatsApp sering melewatkan gambarnya. */
+    images: [
+      {
+        url: "/assets/og-cover.jpg",
+        width: 1200,
+        height: 1200,
+        type: "image/jpeg",
+        alt: "Ilustrasi Ade & Fahmi di pelaminan",
+      },
+    ],
+  },
+  /* "summary" (kotak kecil), bukan "summary_large_image": kartu besar
+     dipotong 2:1, yang akan memangkas judul di atas dan gaun di bawah. */
+  twitter: {
+    card: "summary",
+    title: "The Wedding of Ade & Fahmi",
+    description: "Sabtu, 12 September 2026 — Bojongsari, Depok",
+    images: ["/assets/og-cover.jpg"],
   },
 };
 
