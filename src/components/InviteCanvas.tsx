@@ -507,9 +507,9 @@ function StoryContent({ guestName }: { guestName: string }) {
  *
  * Lapisan (belakang -> depan):
  *   z-0  kartu putih (cyan tetap terlihat di tepi, seperti kartu lain)
- *   z-5  dasar gelap (Lantau) — DI BAWAH dedaunan, bukan memotong lurus
  *   z-10 scene pasangan
- *   z-30 dahan + hamparan bunga yang menutup perbatasan
+ *   z-20 dasar gelap (Lantau) — menutup tepi bawah scene
+ *   z-30 dahan, tetap paling depan seperti sebelumnya
  */
 function TransitionScene() {
   return (
@@ -519,9 +519,9 @@ function TransitionScene() {
 
       {/* dasar gelap */}
       <div
-        className="absolute inset-x-0 bottom-0 z-[5]"
+        className="absolute inset-x-0 bottom-0 z-20"
         style={{
-          height: 400,
+          height: 460,
           backgroundColor: "#28110b",
           backgroundImage: `url(${A}/lantau.webp)`,
           backgroundSize: "1080px auto",
@@ -530,6 +530,15 @@ function TransitionScene() {
         }}
       />
 
+      {/* Aset scene-couple tingginya 1031px pada lebar 1300, dirender selebar
+         1120px -> tinggi 888px, jadi tepi bawahnya jatuh di y=978. Dulu dasar
+         gelap ada di z-5 (di bawah scene), sehingga 18px terakhir gambar itu
+         tergambar di atasnya dan tepi potongnya terlihat sebagai garis terang
+         melintang. Dasar gelap kini di z-20 (di atas scene, tetap di bawah
+         dahan) dan tingginya 460 -> tepi atas 900, jadi tepi gambar tertutup
+         rapi 78px di dalam. Angka 900 dipilih karena di situ garis batasnya
+         jatuh tepat di pangkal rumpun semak scene, sehingga tepi lurusnya
+         terpecah dedaunan alih-alih terbaca sebagai potongan. */}
       {/* pasangan + dedaunan + semak (satu aset) */}
       <div className="absolute left-1/2 top-[90px] z-10 w-[1120px] -translate-x-1/2">
         <img
@@ -541,10 +550,11 @@ function TransitionScene() {
         />
       </div>
 
-      {/* dahan menutup perbatasan taman -> zona gelap. Hamparan bunga
-          (flower-bed) dihapus atas permintaan: semak bawaan scene-couple
-          sudah cukup, dan garland-nya membuat batasnya terasa ramai. */}
-      <div className="animate-sway-soft absolute left-[-6px] top-[620px] z-30 size-[1080px]">{img("ranting.webp")}</div>
+      {/* Dahan menaungi perbatasan itu. Dinaikkan 620 -> 545: bagian
+          rapat dahan ada di 451-468px dari atas wadahnya, jadi di 545
+          pita rapat itu duduk di 996-1013 — memayungi tepi atas dasar
+          gelap (930) alih-alih menggantung jauh di bawahnya. */}
+      <div className="animate-sway-soft absolute left-[-6px] top-[545px] z-30 size-[1080px]">{img("ranting.webp")}</div>
     </div>
   );
 }
