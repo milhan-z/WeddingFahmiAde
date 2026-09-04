@@ -12,7 +12,7 @@ export const couple = {
     order: "Putra Kedua dari",
     parents: "Bapak H. Ramli & Ibu Hj. Murtining",
     // TODO: isi username Instagram (tanpa @). Kosongkan kalau tak ada tombol.
-    instagram: "",
+    instagram: "https://www.instagram.com/fahmimuzakky_?igsi=eWR0ZnIwaW9nNDg5",
   },
   bride: {
     name: "Ade Fitri Kurniasih",
@@ -46,7 +46,7 @@ export const event = {
     address:
       "Jalan H. Maat, RT.2/RW.3, Duren Seribu Sawangan, Kota Depok, Jawa Barat, Id 16518",
     mapsUrl:
-      "https://maps.google.com/?q=Jalan+H.+Maat+Duren+Seribu+Sawangan+Depok+16518",
+      "https://www.google.com/maps/place/6%C2%B025'45.4%22S+106%C2%B044'38.3%22E/@-6.4292684,106.7413902,17z/data=!3m1!4b1!4m4!3m3!8m2!3d-6.4292684!4d106.7439651?entry=tts&g_ep=EgoyMDI2MDcyOS4wIPu8ASoASAFQAw%3D%3D&skid=b83f9302-961a-4213-9005-017c6d657a61",
   },
   // Dipakai untuk hitung mundur — disamakan dengan jam akad (09.00 WIB).
   isoDateTime: "2026-09-12T09:00:00+07:00",
