@@ -560,12 +560,20 @@ function TransitionScene() {
   );
 }
 
+/** Sama dengan batas di route /api/wishes — dipakai agar tamu melihat
+    batasnya, bukan diam-diam dipotong setelah terkirim. */
+const LIMIT = { name: 80, address: 120, message: 600 } as const;
+const MAX_GUESTS = 20;
+
+type FieldErrors = { name?: string; guests?: string; message?: string };
+
 function RsvpCard({ guestName }: { guestName: string }) {
   const [name, setName] = useState(guestName);
   const [attendance, setAttendance] = useState<Wish["attendance"]>("hadir");
   const [guests, setGuests] = useState("1");
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
 
   // guestName sudah tersedia saat render pertama (dari useSearchParams),
@@ -575,9 +583,43 @@ function RsvpCard({ guestName }: { guestName: string }) {
   const need = attendance !== "tidak_hadir";
   const labels: Record<Wish["attendance"], string> = { hadir: "Hadir", tidak_hadir: "Tidak hadir", ragu: "Masih Ragu" };
 
+  /** Setiap perubahan mengembalikan tombol ke keadaan siap kirim, supaya
+      tamu bisa menambah ucapan lagi tanpa memuat ulang halaman. */
+  function edit<T>(setter: (v: T) => void, field?: keyof FieldErrors) {
+    return (v: T) => {
+      setter(v);
+      if (status !== "loading") setStatus("idle");
+      if (field) setErrors((p) => (p[field] ? { ...p, [field]: undefined } : p));
+    };
+  }
+
+  /* Validasi sendiri, bukan `required` bawaan browser. Dua alasan: pesan
+     bawaannya berbahasa Inggris ("Value must be less than or equal to 20")
+     di undangan berbahasa Indonesia, dan `required` menganggap teks berisi
+     spasi saja sebagai terisi — dulu itu membuat tombol Submit tidak
+     bereaksi sama sekali, tanpa satu pun penjelasan ke tamu. */
+  function validate(): FieldErrors {
+    const e: FieldErrors = {};
+    if (!name.trim()) e.name = "Nama wajib diisi.";
+    if (!message.trim()) e.message = "Ucapan & doa wajib diisi.";
+    if (need) {
+      const n = Number.parseInt(guests, 10);
+      if (!Number.isFinite(n) || n < 1) e.guests = "Isi minimal 1 orang.";
+      else if (n > MAX_GUESTS) e.guests = `Maksimal ${MAX_GUESTS} orang.`;
+    }
+    return e;
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !message.trim()) return;
+    const found = validate();
+    setErrors(found);
+    const first = (["name", "guests", "message"] as const).find((k) => found[k]);
+    if (first) {
+      document.getElementById(`rsvp-${first}`)?.focus();
+      return;
+    }
+
     setStatus("loading");
     try {
       const res = await fetch("/api/wishes", {
@@ -588,7 +630,6 @@ function RsvpCard({ guestName }: { guestName: string }) {
       if (!res.ok) throw new Error();
       setMessage("");
       setStatus("sent");
-      setTimeout(() => setStatus("idle"), 2500);
     } catch {
       setStatus("error");
     }
@@ -596,47 +637,121 @@ function RsvpCard({ guestName }: { guestName: string }) {
 
   // py cukup besar supaya tinggi sentuh tetap >=44px setelah kanvas diskala
   const inputCls = "w-full rounded-[24px] border-2 border-black/15 bg-white px-[32px] py-[38px] text-[39px] text-black outline-none";
+  const labelCls = "mb-[12px] block text-[34px] font-semibold text-black/60";
+  const errCls = "mt-[10px] text-[30px] font-semibold text-red-600";
 
   return (
     <Card title="RSVP">
-      <form onSubmit={submit} className="flex flex-col gap-[30px] text-left">
+      <form onSubmit={submit} noValidate className="flex flex-col gap-[30px] text-left">
         <div>
-          <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Nama*</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Nama Anda" className={inputCls} />
+          <label htmlFor="rsvp-name" className={labelCls}>Nama*</label>
+          <input
+            id="rsvp-name"
+            value={name}
+            onChange={(e) => edit(setName, "name")(e.target.value)}
+            maxLength={LIMIT.name}
+            autoComplete="name"
+            aria-invalid={!!errors.name}
+            placeholder="Nama Anda"
+            className={inputCls}
+          />
+          {errors.name && <p role="alert" className={errCls}>{errors.name}</p>}
         </div>
+
         <div>
-          <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Konfirmasi Kehadiran*</label>
-          <div className="grid grid-cols-3 gap-[16px]">
+          <span id="rsvp-hadir-label" className={labelCls}>Konfirmasi Kehadiran*</span>
+          <div role="group" aria-labelledby="rsvp-hadir-label" className="grid grid-cols-3 gap-[16px]">
             {(Object.keys(labels) as Wish["attendance"][]).map((k) => (
               <button
                 type="button"
                 key={k}
-                onClick={() => setAttendance(k)}
-                className={`rounded-[20px] border-2 py-[30px] text-[34px] font-semibold ${attendance === k ? "border-black bg-black text-white" : "border-black/15 text-black/70"}`}
+                aria-pressed={attendance === k}
+                onClick={() => edit(setAttendance)(k)}
+                className={`rounded-[20px] border-2 py-[38px] text-[34px] font-semibold ${attendance === k ? "border-black bg-black text-white" : "border-black/15 text-black/70"}`}
               >
                 {labels[k]}
               </button>
             ))}
           </div>
         </div>
+
         {need && (
           <div>
-            <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Jumlah Kehadiran*</label>
-            <input type="number" inputMode="numeric" min={1} max={20} value={guests} onChange={(e) => setGuests(e.target.value)} required className={inputCls} />
+            <label htmlFor="rsvp-guests" className={labelCls}>Jumlah Kehadiran*</label>
+            <input
+              id="rsvp-guests"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={MAX_GUESTS}
+              value={guests}
+              onChange={(e) => edit(setGuests, "guests")(e.target.value)}
+              aria-invalid={!!errors.guests}
+              className={inputCls}
+            />
+            {errors.guests && <p role="alert" className={errCls}>{errors.guests}</p>}
           </div>
         )}
+
         <div>
-          <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Alamat Domisili</label>
-          <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Kota / kecamatan (opsional)" className={inputCls} />
+          <label htmlFor="rsvp-address" className={labelCls}>Alamat Domisili</label>
+          <input
+            id="rsvp-address"
+            value={address}
+            onChange={(e) => edit(setAddress)(e.target.value)}
+            maxLength={LIMIT.address}
+            autoComplete="address-level2"
+            placeholder="Kota / kecamatan (opsional)"
+            className={inputCls}
+          />
         </div>
+
         <div>
-          <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Ucapan &amp; Doa*</label>
-          <textarea value={message} onChange={(e) => setMessage(e.target.value)} required rows={3} placeholder="Tuliskan ucapan & doa terbaik Anda..." className={`${inputCls} resize-none`} />
+          <label htmlFor="rsvp-message" className={labelCls}>Ucapan &amp; Doa*</label>
+          <textarea
+            id="rsvp-message"
+            value={message}
+            onChange={(e) => edit(setMessage, "message")(e.target.value)}
+            maxLength={LIMIT.message}
+            rows={3}
+            aria-invalid={!!errors.message}
+            placeholder="Tuliskan ucapan & doa terbaik Anda..."
+            className={`${inputCls} resize-none`}
+          />
+          {errors.message ? (
+            <p role="alert" className={errCls}>{errors.message}</p>
+          ) : (
+            message.length > LIMIT.message - 100 && (
+              <p className="mt-[10px] text-[30px] text-black/45">
+                Sisa {LIMIT.message - message.length} karakter.
+              </p>
+            )
+          )}
         </div>
-        <button type="submit" disabled={status === "loading"} className="rounded-full bg-black py-[36px] text-[42px] font-semibold text-white disabled:opacity-60">
+
+        <button
+          type="submit"
+          disabled={status === "loading" || status === "sent"}
+          className="rounded-full bg-black py-[36px] text-[42px] font-semibold text-white disabled:opacity-60"
+        >
           {status === "loading" ? "Mengirim..." : status === "sent" ? "Terkirim, terima kasih!" : "Submit"}
         </button>
-        {status === "error" && <p className="text-center text-[32px] text-red-600">Gagal mengirim, coba lagi.</p>}
+
+        {/* Keadaan "terkirim" sengaja MENETAP, tidak kembali sendiri ke
+            "Submit" setelah beberapa detik. Konfirmasi yang hilang sendiri
+            membuat tamu ragu apakah berhasil, lalu mengirim ulang. */}
+        <div aria-live="polite" className="text-center">
+          {status === "sent" && (
+            <p className="text-[32px] text-green-700">
+              Konfirmasi Anda sudah kami terima. Terima kasih.
+            </p>
+          )}
+          {status === "error" && (
+            <p role="alert" className="text-[32px] text-red-600">
+              Gagal mengirim. Periksa koneksi lalu coba lagi.
+            </p>
+          )}
+        </div>
       </form>
     </Card>
   );

@@ -38,9 +38,26 @@ export const sheetsEnabled = Boolean(ENDPOINT);
  */
 let memoryCount = 0;
 
+/**
+ * Cegah isian tamu diperlakukan sebagai RUMUS oleh Google Sheets.
+ *
+ * appendRow menulis nilai seolah-olah diketik, jadi ucapan yang diawali
+ * "=", "+", "-", atau "@" akan dieksekusi — mulai dari yang tidak sengaja
+ * ("-- semoga bahagia" jadi #ERROR!) sampai yang disengaja (=IMPORTXML untuk
+ * menarik isi sheet ke luar). Awalan kutip satu membuat Sheets menyimpannya
+ * sebagai teks; kutipnya sendiri tidak ikut tampil di sel.
+ */
+function asText(v: string | null): string | null {
+  if (!v) return v;
+  return /^[=+\-@\t\r]/.test(v) ? `'${v}` : v;
+}
+
 export async function addWish(input: Omit<Wish, "id" | "created_at">): Promise<Wish> {
   const wish: Wish = {
     ...input,
+    name: asText(input.name) as string,
+    address: asText(input.address),
+    message: asText(input.message) as string,
     id: crypto.randomUUID(),
     created_at: new Date().toISOString(),
   };
