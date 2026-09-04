@@ -265,7 +265,7 @@ function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) 
       <div className="absolute left-[89px] top-[3955px] h-[3170px] w-[903px] rounded-[451.5px] bg-white" />
 
       {/* header */}
-      <div className="animate-sway-soft absolute left-0 top-[-320px] size-[1080px]">{img("ranting.webp")}</div>
+      <div className="absolute left-0 top-[-320px] size-[1080px]">{img("ranting.webp")}</div>
       <div className="animate-bob absolute left-[63px] top-[440px] size-[954px]">{img("title-white.webp")}</div>
       <p className="absolute left-1/2 top-[1150px] -translate-x-1/2 whitespace-nowrap text-[60.7px] font-semibold tracking-[0.12em] text-white">12 . 09 . 2026</p>
       <div className="absolute left-[-302px] top-[1435px] size-[880px]">{img("runout.webp")}</div>
@@ -514,8 +514,10 @@ function StoryContent({ guestName }: { guestName: string }) {
 function TransitionScene() {
   return (
     <div className="relative w-[1080px] overflow-hidden" style={{ height: 1360, background: CYAN }}>
-      {/* kartu putih di belakang, senada kartu konten lain */}
-      <div className="absolute left-[89px] top-[-260px] z-0 h-[1290px] w-[903px] rounded-b-[240px] bg-white" />
+      {/* Tidak ada kartu putih di belakang pasangan: aset scene-couple memang
+          tembus pandang di baliknya (56% piksel di bagian atas transparan),
+          jadi yang terlihat sekarang langsung langit cyan — menyambung dengan
+          bagian cerita di atasnya, bukan kotak putih yang memotong. */}
 
       {/* dasar gelap */}
       <div
@@ -553,7 +555,7 @@ function TransitionScene() {
 
       {/* Dahan menaungi perbatasan itu. Di 545 bagian rapatnya (451-468px
           dari atas wadah) duduk di 996-1013, tepat menutup garis 972. */}
-      <div className="animate-sway-soft absolute left-[-6px] top-[545px] z-30 size-[1080px]">{img("ranting.webp")}</div>
+      <div className="absolute left-[-6px] top-[545px] z-30 size-[1080px]">{img("ranting.webp")}</div>
     </div>
   );
 }

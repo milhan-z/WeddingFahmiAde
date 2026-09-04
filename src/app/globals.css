@@ -155,21 +155,6 @@ html.reveal-off .reveal {
   transition: none !important;
 }
 
-/* gerak halus terus-menerus untuk elemen dekoratif */
-@keyframes sway-soft {
-  0%,
-  100% {
-    transform: rotate(-1.2deg);
-  }
-  50% {
-    transform: rotate(1.2deg);
-  }
-}
-.animate-sway-soft {
-  animation: sway-soft 9s ease-in-out infinite;
-  transform-origin: 50% 90%;
-}
-
 @keyframes bob {
   0%,
   100% {
@@ -242,7 +227,6 @@ html.reveal-off .reveal {
   .animate-drift,
   .animate-rise-in,
   .animate-fade-in,
-  .animate-sway-soft,
   .animate-bob,
   .animate-pulse-ring {
     animation: none;
