@@ -14,9 +14,10 @@
 }
 
 @theme inline {
-  --font-serif: "Playfair Display", "Cormorant Garamond", serif;
-  --font-body: "Cormorant Garamond", serif;
-  --font-script: "Alex Brush", cursive;
+  /* variabel diisi next/font (self-hosted), dengan fallback aman */
+  --font-serif: var(--font-playfair), "Playfair Display", serif;
+  --font-body: var(--font-cormorant), "Cormorant Garamond", serif;
+  --font-script: var(--font-alexbrush), "Alex Brush", cursive;
 
   --color-cream: var(--color-cream);
   --color-cream-deep: var(--color-cream-deep);

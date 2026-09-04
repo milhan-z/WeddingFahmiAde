@@ -1,5 +1,31 @@
 import type { Metadata, Viewport } from "next";
+import { Playfair_Display, Cormorant_Garamond, Alex_Brush } from "next/font/google";
 import "./globals.css";
+
+/**
+ * Font di-host sendiri lewat next/font, bukan <link> ke Google Fonts.
+ * Bedanya nyata untuk kecepatan: tidak ada round-trip ke domain pihak
+ * ketiga yang memblokir render, berkasnya di-preload, dan hanya subset
+ * latin yang diunduh.
+ */
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
+const alexBrush = Alex_Brush({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-alexbrush",
+  display: "swap",
+});
 
 /**
  * URL dasar untuk metadata (preview link WhatsApp/Telegram).
@@ -53,18 +79,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id">
+    <html
+      lang="id"
+      className={`${playfair.variable} ${cormorant.variable} ${alexBrush.variable}`}
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:wght@500;600;700&family=Alex+Brush&display=swap"
-          rel="stylesheet"
-        />
+        {/* Gambar cover = layar pertama; diminta lebih awal agar cepat tampil */}
+        <link rel="preload" as="image" href="/figma/cover-title.webp" fetchPriority="high" />
+        <link rel="preload" as="image" href="/figma/cover-pengantin.webp" fetchPriority="high" />
       </head>
       <body>{children}</body>
     </html>

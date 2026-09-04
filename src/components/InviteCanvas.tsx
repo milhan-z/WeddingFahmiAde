@@ -19,8 +19,19 @@ const A = "/figma";
 const SKY = "#7bd4ff";
 const CYAN = "#adfffe";
 
+/**
+ * Dekorasi kanvas cerita. `loading="lazy"` aman dipakai menyeluruh: gambar
+ * yang sudah berada di viewport tetap diunduh segera, sedangkan sisanya —
+ * kanvasnya ~19.000px — baru diambil saat tamu menggulir mendekatinya.
+ */
 const img = (src: string) => (
-  <img alt="" src={`${A}/${src}`} className="absolute inset-0 size-full max-w-none object-cover pointer-events-none" />
+  <img
+    alt=""
+    src={`${A}/${src}`}
+    loading="lazy"
+    decoding="async"
+    className="absolute inset-0 size-full max-w-none object-cover pointer-events-none"
+  />
 );
 
 /* ══════════════════════════ COVER ══════════════════════════ */
@@ -33,13 +44,13 @@ function CoverArt({ guestName }: { guestName: string }) {
       </div>
       <div className="absolute left-0 top-0 h-[1955px] w-[1080px] bg-gradient-to-b from-white to-transparent" />
       <div className="absolute left-[158px] top-[866px] h-[1089px] w-[770px]">
-        <img alt="Fahmi & Ade" src={`${A}/cover-pengantin.webp`} className="absolute inset-0 size-full max-w-none object-cover" />
+        <img alt="Fahmi & Ade" src={`${A}/cover-pengantin.webp`} fetchPriority="high" decoding="async" className="absolute inset-0 size-full max-w-none object-cover" />
       </div>
       <div className="absolute left-[-115px] size-[1316px] top-[893px]">
         <img alt="" src={`${A}/kenbangdrown.webp`} className="absolute inset-0 size-full max-w-none object-cover" />
       </div>
       <div className="absolute left-[129px] size-[828px] top-0">
-        <img alt="The Wedding of Ade & Fahmi" src={`${A}/cover-title.webp`} className="absolute inset-0 size-full max-w-none object-cover" />
+        <img alt="The Wedding of Ade & Fahmi" src={`${A}/cover-title.webp`} fetchPriority="high" decoding="async" className="absolute inset-0 size-full max-w-none object-cover" />
       </div>
       <div className="absolute left-1/2 top-[1360px] w-[760px] -translate-x-1/2 rounded-[60px] bg-white/55 px-10 py-7 text-center backdrop-blur-[2px]">
         <p className="font-serif text-[37px] uppercase tracking-[0.3em] text-[#5c1f2e]/75">Kepada Yth.</p>
@@ -101,7 +112,7 @@ function JourneyVideo() {
               <path d="M8 5.5v13l11-6.5-11-6.5Z" fill="#241019" />
             </svg>
           </span>
-          <span className="rounded-full bg-black/45 px-10 py-4 text-[44px] font-medium text-white">
+          <span className="rounded-full bg-black/45 px-10 py-4 text-[44px] font-normal text-white">
             Putar Video
           </span>
         </button>
@@ -120,7 +131,7 @@ function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) 
       {/* header */}
       <div className="absolute left-0 top-[-320px] size-[1080px]">{img("ranting.webp")}</div>
       <div className="absolute left-[63px] top-[440px] size-[954px]">{img("title-white.webp")}</div>
-      <p className="absolute left-1/2 top-[1150px] -translate-x-1/2 whitespace-nowrap text-[60.7px] font-bold tracking-[0.12em] text-white">12 . 09 . 2026</p>
+      <p className="absolute left-1/2 top-[1150px] -translate-x-1/2 whitespace-nowrap text-[60.7px] font-semibold tracking-[0.12em] text-white">12 . 09 . 2026</p>
       <div className="absolute left-[-302px] top-[1435px] size-[880px]">{img("runout.webp")}</div>
       <div className="absolute left-[476px] top-[1435px] size-[880px]">{img("runout.webp")}</div>
       <div className="absolute left-[100px] top-[1465px] size-[880px]">{img("runout.webp")}</div>
@@ -130,13 +141,13 @@ function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) 
         <JourneyVideo />
       </div>
       <div className="absolute left-[-236px] top-[1855px] h-[746px] w-[1553px] overflow-hidden pointer-events-none">
-        <img alt="" src={`${A}/atap.webp`} className="absolute left-0 top-[-47.11%] h-[147.17%] w-full max-w-none" />
+        <img alt="" src={`${A}/atap.webp`} loading="lazy" decoding="async" className="absolute left-0 top-[-47.11%] h-[147.17%] w-full max-w-none" />
       </div>
       <div className="absolute left-[930px] top-[2147px] h-[1692px] w-[230px] overflow-hidden pointer-events-none">
-        <img alt="" src={`${A}/bats.webp`} className="absolute left-[-209.66%] top-[-0.04%] h-[100.08%] w-[519.33%] max-w-none" />
+        <img alt="" src={`${A}/bats.webp`} loading="lazy" decoding="async" className="absolute left-[-209.66%] top-[-0.04%] h-[100.08%] w-[519.33%] max-w-none" />
       </div>
       <div className="absolute left-[-41px] top-[2147px] h-[1692px] w-[230px] overflow-hidden pointer-events-none">
-        <img alt="" src={`${A}/bats.webp`} className="absolute left-[-209.66%] top-[-0.04%] h-[100.08%] w-[519.33%] max-w-none" />
+        <img alt="" src={`${A}/bats.webp`} loading="lazy" decoding="async" className="absolute left-[-209.66%] top-[-0.04%] h-[100.08%] w-[519.33%] max-w-none" />
       </div>
 
       {/* Bride & Groom — tipografi elegan (script + serif), bukan sans tebal */}
@@ -243,7 +254,7 @@ function StoryContent({ guestName }: { guestName: string }) {
             <div className="mt-[50px] flex justify-center gap-[24px]">
               {[["Hari", cd.d], ["Jam", cd.h], ["Menit", cd.m], ["Detik", cd.s]].map(([l, v]) => (
                 <div key={l as string} className="flex w-[150px] flex-col items-center rounded-[28px] bg-[#adfffe] py-[36px]">
-                  <span className="text-[62px] font-extrabold leading-none text-black">{String(v).padStart(2, "0")}</span>
+                  <span className="text-[62px] font-semibold leading-none text-black">{String(v).padStart(2, "0")}</span>
                   <span className="mt-[10px] text-[32px] font-semibold text-black/60">{l}</span>
                 </div>
               ))}
@@ -253,19 +264,19 @@ function StoryContent({ guestName }: { guestName: string }) {
           <Card title="Wedding Event">
             {[event.akad, event.resepsi].map((e) => (
               <div key={e.label} className="mb-[40px] rounded-[36px] border-2 border-black/10 py-[44px]">
-                <p className="text-[50px] font-bold text-black">{e.label}</p>
+                <p className="text-[50px] font-semibold text-black">{e.label}</p>
                 <p className="mt-[18px] text-[39px] text-black/75">{e.day} | {e.date}</p>
                 <p className="mt-[6px] text-[39px] text-black/75">{e.time}</p>
               </div>
             ))}
             <div className="rounded-[36px] border-2 border-black/10 px-[40px] py-[44px]">
-              <p className="text-[44px] font-bold text-black">{event.location.name}</p>
+              <p className="text-[44px] font-semibold text-black">{event.location.name}</p>
               <p className="mt-[16px] text-[36px] leading-relaxed text-black/70">{event.location.address}</p>
               <a
                 href={event.location.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-[30px] inline-flex rounded-full bg-black px-[46px] py-[28px] text-[39px] font-bold text-white"
+                className="mt-[30px] inline-flex rounded-full bg-black px-[46px] py-[28px] text-[39px] font-semibold text-white"
               >
                 Buka Google Maps
               </a>
@@ -297,14 +308,14 @@ function StoryContent({ guestName }: { guestName: string }) {
                   <img
                     src={`${A}/${acc.bank.toLowerCase().includes("bca") ? "logo-bca" : "logo-mandiri"}.webp`}
                     alt={acc.bank}
-                    className="mx-auto mb-[20px] h-[64px] w-auto object-contain"
+                    loading="lazy" decoding="async" className="mx-auto mb-[20px] h-[64px] w-auto object-contain"
                   />
-                  <p className="text-[44px] font-extrabold uppercase tracking-wide text-black">{acc.bank}</p>
-                  <p className="mt-[16px] text-[54px] font-bold tracking-[0.08em] text-black">{acc.number}</p>
+                  <p className="text-[44px] font-semibold uppercase tracking-wide text-black">{acc.bank}</p>
+                  <p className="mt-[16px] text-[54px] font-semibold tracking-[0.08em] text-black">{acc.number}</p>
                   <p className="mt-[8px] text-[37px] text-black/65">a.n {acc.holder}</p>
                   <button
                     onClick={() => copy(acc.number, acc.number)}
-                    className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[24px] text-[37px] font-bold text-black active:scale-[0.97]"
+                    className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[24px] text-[37px] font-semibold text-black active:scale-[0.97]"
                   >
                     {copied === acc.number ? "Tersalin ✓" : "Salin Nomor"}
                   </button>
@@ -312,13 +323,13 @@ function StoryContent({ guestName }: { guestName: string }) {
               ))}
             </div>
             <div className="mt-[50px]">
-              <h3 className="text-[52px] font-extrabold text-black">{gift.shipping.heading}</h3>
+              <h3 className="text-[52px] font-semibold text-black">{gift.shipping.heading}</h3>
               <div className="mt-[30px] rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
                 <p className="text-[36px] leading-relaxed text-black/75">{gift.shipping.address}</p>
-                <p className="mt-[14px] text-[39px] font-bold text-black">{gift.shipping.recipient}</p>
+                <p className="mt-[14px] text-[39px] font-semibold text-black">{gift.shipping.recipient}</p>
                 <button
                   onClick={() => copy(`${gift.shipping.address} (${gift.shipping.recipient})`, "addr")}
-                  className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[24px] text-[37px] font-bold text-black active:scale-[0.97]"
+                  className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[24px] text-[37px] font-semibold text-black active:scale-[0.97]"
                 >
                   {copied === "addr" ? "Tersalin ✓" : "Salin Alamat"}
                 </button>
@@ -398,18 +409,18 @@ function RsvpCard({ guestName }: { guestName: string }) {
     <Card title="RSVP">
       <form onSubmit={submit} className="flex flex-col gap-[30px] text-left">
         <div>
-          <label className="mb-[12px] block text-[34px] font-bold text-black/60">Nama*</label>
+          <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Nama*</label>
           <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Nama Anda" className={inputCls} />
         </div>
         <div>
-          <label className="mb-[12px] block text-[34px] font-bold text-black/60">Konfirmasi Kehadiran*</label>
+          <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Konfirmasi Kehadiran*</label>
           <div className="grid grid-cols-3 gap-[16px]">
             {(Object.keys(labels) as Wish["attendance"][]).map((k) => (
               <button
                 type="button"
                 key={k}
                 onClick={() => setAttendance(k)}
-                className={`rounded-[20px] border-2 py-[30px] text-[34px] font-bold ${attendance === k ? "border-black bg-black text-white" : "border-black/15 text-black/70"}`}
+                className={`rounded-[20px] border-2 py-[30px] text-[34px] font-semibold ${attendance === k ? "border-black bg-black text-white" : "border-black/15 text-black/70"}`}
               >
                 {labels[k]}
               </button>
@@ -418,19 +429,19 @@ function RsvpCard({ guestName }: { guestName: string }) {
         </div>
         {need && (
           <div>
-            <label className="mb-[12px] block text-[34px] font-bold text-black/60">Jumlah Kehadiran*</label>
+            <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Jumlah Kehadiran*</label>
             <input type="number" inputMode="numeric" min={1} max={20} value={guests} onChange={(e) => setGuests(e.target.value)} required className={inputCls} />
           </div>
         )}
         <div>
-          <label className="mb-[12px] block text-[34px] font-bold text-black/60">Alamat Domisili</label>
+          <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Alamat Domisili</label>
           <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Kota / kecamatan (opsional)" className={inputCls} />
         </div>
         <div>
-          <label className="mb-[12px] block text-[34px] font-bold text-black/60">Ucapan &amp; Doa*</label>
+          <label className="mb-[12px] block text-[34px] font-semibold text-black/60">Ucapan &amp; Doa*</label>
           <textarea value={message} onChange={(e) => setMessage(e.target.value)} required rows={3} placeholder="Tuliskan ucapan & doa terbaik Anda..." className={`${inputCls} resize-none`} />
         </div>
-        <button type="submit" disabled={status === "loading"} className="rounded-full bg-black py-[36px] text-[42px] font-bold text-white disabled:opacity-60">
+        <button type="submit" disabled={status === "loading"} className="rounded-full bg-black py-[36px] text-[42px] font-semibold text-white disabled:opacity-60">
           {status === "loading" ? "Mengirim..." : status === "sent" ? "Terkirim, terima kasih!" : "Submit"}
         </button>
         {status === "error" && <p className="text-center text-[32px] text-red-600">Gagal mengirim, coba lagi.</p>}
@@ -438,12 +449,12 @@ function RsvpCard({ guestName }: { guestName: string }) {
 
       {wishes.length > 0 && (
         <div className="mt-[70px] text-left">
-          <h3 className="mb-[30px] text-center text-[52px] font-extrabold text-black">Best Wishes</h3>
+          <h3 className="mb-[30px] text-center text-[52px] font-semibold text-black">Best Wishes</h3>
           <div className="flex max-h-[900px] flex-col gap-[24px] overflow-y-auto">
             {wishes.map((w) => (
               <div key={w.id} className="rounded-[28px] bg-[#eafcff] px-[36px] py-[28px]">
                 <div className="flex items-center justify-between gap-4">
-                  <span className="text-[39px] font-bold text-black">{w.name}</span>
+                  <span className="text-[39px] font-semibold text-black">{w.name}</span>
                   <span className="shrink-0 text-[30px] font-semibold text-black/45">
                     {labels[w.attendance]}{w.guests ? ` · ${w.guests}` : ""}
                   </span>
@@ -474,7 +485,7 @@ function StoryFooter() {
       }}
     >
       <div className="absolute inset-x-0 top-[220px] px-[90px] text-center font-sans text-white">
-        <p className="text-[39px] font-medium leading-relaxed text-white/85">{closing.text}</p>
+        <p className="text-[39px] font-normal leading-relaxed text-white/85">{closing.text}</p>
         <p className="mt-[40px] font-serif text-[64px] font-semibold text-white">{couple.pairName}</p>
       </div>
       <div className="absolute left-[-189px] top-[820px] size-[1466px]">{img("gapura.webp")}</div>
