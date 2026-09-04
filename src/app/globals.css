@@ -129,6 +129,75 @@ body {
   animation: fade-in 1.3s ease-out both;
 }
 
+/* ── Muncul saat digulir ──────────────────────────────────────────────
+   Kelas `reveal` BARU dipasang oleh JavaScript saat komponen mount, jadi
+   kalau JS gagal/lambat, isinya tetap terlihat (tidak pernah tersangkut
+   di opacity 0 — masalah yang dulu terjadi dengan animasi berbasis JS). */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Jaring pengaman: dipasang di <html> kalau IntersectionObserver ternyata
+   tidak menyala (mesin render dibekukan, tab disembunyikan, dsb). Undangan
+   harus tetap terbaca — lebih baik kehilangan animasi daripada kehilangan
+   isinya. */
+html.reveal-off .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* gerak halus terus-menerus untuk elemen dekoratif */
+@keyframes sway-soft {
+  0%,
+  100% {
+    transform: rotate(-1.2deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}
+.animate-sway-soft {
+  animation: sway-soft 9s ease-in-out infinite;
+  transform-origin: 50% 90%;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+.animate-bob {
+  animation: bob 6s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 38px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+
 /* dahan/daun bergoyang pelan — poros di ujung yang menempel ke tepi layar */
 @keyframes sway {
   0%,
@@ -172,8 +241,17 @@ body {
   .animate-float-soft,
   .animate-drift,
   .animate-rise-in,
-  .animate-fade-in {
+  .animate-fade-in,
+  .animate-sway-soft,
+  .animate-bob,
+  .animate-pulse-ring {
     animation: none;
+  }
+  /* isi tetap tampil, cukup tanpa gerakan */
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

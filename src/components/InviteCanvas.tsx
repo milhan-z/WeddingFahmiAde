@@ -34,6 +34,100 @@ const img = (src: string) => (
   />
 );
 
+/**
+ * Muncul saat digulir.
+ *
+ * Kelas `reveal` (yang menyembunyikan) sengaja dipasang lewat JS setelah
+ * mount, bukan langsung di markup. Jadi kalau JS gagal atau lambat, isinya
+ * tetap terbaca — tidak mengulang masalah lama di mana konten tersangkut
+ * di opacity 0. IntersectionObserver hanya menambah kelas; animasinya CSS,
+ * jadi berjalan di compositor dan ringan.
+ */
+/**
+ * Jaring pengaman untuk efek muncul-saat-digulir.
+ *
+ * Kalau ada elemen yang JELAS berada di dalam viewport tapi belum ter-reveal
+ * setelah 1,5 detik, berarti IntersectionObserver tidak menyala (mesin render
+ * dibekukan / tab tersembunyi). Dalam kondisi itu efeknya dimatikan menyeluruh
+ * lewat kelas di <html>, supaya undangan tidak pernah tersangkut tak terlihat
+ * — persis kegagalan yang dulu terjadi dengan animasi berbasis JS.
+ */
+let safetyArmed = false;
+function armRevealSafetyNet() {
+  if (safetyArmed) return;
+  safetyArmed = true;
+
+  let sinceInView = 0;
+  const timer = window.setInterval(() => {
+    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+
+    // Ada yang sudah menyala => observer bekerja, pengaman tidak diperlukan.
+    if (els.some((el) => el.classList.contains("is-in"))) {
+      window.clearInterval(timer);
+      return;
+    }
+
+    const anyInView = els.some((el) => {
+      const r = el.getBoundingClientRect();
+      return r.bottom > 0 && r.top < window.innerHeight;
+    });
+
+    // Hitung hanya saat memang ada elemen di layar. Dua kali berturut-turut
+    // (±1,6 detik) masih gelap => observer tidak menyala, matikan efeknya.
+    sinceInView = anyInView ? sinceInView + 1 : 0;
+    if (sinceInView >= 2) {
+      document.documentElement.classList.add("reveal-off");
+      window.clearInterval(timer);
+    }
+  }, 800);
+
+  // Berhenti memeriksa setelah 30 detik apa pun hasilnya.
+  window.setTimeout(() => window.clearInterval(timer), 30000);
+}
+
+function useReveal<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    el.classList.add("reveal");
+    armRevealSafetyNet();
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          el.classList.add("is-in");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return ref;
+}
+
+function Reveal({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useReveal<HTMLDivElement>();
+  return (
+    <div ref={ref} className={className} style={{ transitionDelay: `${delay}ms` }}>
+      {children}
+    </div>
+  );
+}
+
 /* ══════════════════════════ COVER ══════════════════════════ */
 
 function CoverArt({ guestName }: { guestName: string }) {
@@ -152,7 +246,7 @@ function JourneyVideo() {
           aria-label="Putar video perjalanan"
           className="absolute inset-0 flex items-center justify-center bg-black/30"
         >
-          <span className="flex size-[170px] items-center justify-center rounded-full bg-white/95 shadow-lg">
+          <span className="animate-pulse-ring flex size-[170px] items-center justify-center rounded-full bg-white/95 shadow-lg">
             <svg width="80" height="80" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path d="M8 5.5v13l11-6.5-11-6.5Z" fill="#241019" />
             </svg>
@@ -171,8 +265,8 @@ function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) 
       <div className="absolute left-[89px] top-[3955px] h-[3170px] w-[903px] rounded-[451.5px] bg-white" />
 
       {/* header */}
-      <div className="absolute left-0 top-[-320px] size-[1080px]">{img("ranting.webp")}</div>
-      <div className="absolute left-[63px] top-[440px] size-[954px]">{img("title-white.webp")}</div>
+      <div className="animate-sway-soft absolute left-0 top-[-320px] size-[1080px]">{img("ranting.webp")}</div>
+      <div className="animate-bob absolute left-[63px] top-[440px] size-[954px]">{img("title-white.webp")}</div>
       <p className="absolute left-1/2 top-[1150px] -translate-x-1/2 whitespace-nowrap text-[60.7px] font-semibold tracking-[0.12em] text-white">12 . 09 . 2026</p>
       <div className="absolute left-[-302px] top-[1435px] size-[880px]">{img("runout.webp")}</div>
       <div className="absolute left-[476px] top-[1435px] size-[880px]">{img("runout.webp")}</div>
@@ -215,8 +309,13 @@ function PersonBlock({
   name: { name: string; shortName: string; order: string; parents: string };
   ig?: string;
 }) {
+  // Reveal dipasang di elemen DALAM, bukan di pembungkus yang memakai
+  // -translate-x-1/2: kelas .reveal menulis `transform`, jadi kalau ditempel
+  // di elemen yang sama, penengahan horizontalnya ikut tertimpa.
+  const ref = useReveal<HTMLDivElement>();
   return (
     <div className="absolute left-1/2 -translate-x-1/2 text-center" style={{ top: topName, width: 900 }}>
+      <div ref={ref}>
       <p className="font-script text-[86px] leading-none text-mustard">{name.shortName}</p>
       <p className="mt-[26px] font-serif text-[62px] font-semibold leading-tight text-maroon">{name.name}</p>
       <p className="mx-auto mt-[20px] max-w-[700px] font-body text-[38px] leading-normal text-ink/80">
@@ -236,6 +335,7 @@ function PersonBlock({
           </svg>
           Instagram
         </a>
+        </div>
       </div>
     </div>
   );
@@ -245,10 +345,12 @@ function PersonBlock({
 
 function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
-    <div className="mx-auto w-[903px] rounded-[80px] bg-white px-[75px] py-[90px] text-center font-body text-ink shadow-[0_24px_60px_rgba(20,40,60,0.12)]">
-      {title && <h2 className="mb-[50px] font-script text-[92px] leading-none text-maroon">{title}</h2>}
-      {children}
-    </div>
+    <Reveal>
+      <div className="mx-auto w-[903px] rounded-[80px] bg-white px-[75px] py-[90px] text-center font-body text-ink shadow-[0_24px_60px_rgba(20,40,60,0.12)]">
+        {title && <h2 className="mb-[50px] font-script text-[92px] leading-none text-maroon">{title}</h2>}
+        {children}
+      </div>
+    </Reveal>
   );
 }
 
@@ -443,7 +545,7 @@ function TransitionScene() {
           Dipakai flower-bed (garland horizontal) karena `runout` hanyalah
           semak hijau polos — tidak akan memberi hamparan bunga seperti
           rancangan. Dua lapis, sedikit bergeser, agar rapat. */}
-      <div className="absolute left-[-6px] top-[680px] z-30 size-[1080px]">{img("ranting.webp")}</div>
+      <div className="animate-sway-soft absolute left-[-6px] top-[680px] z-30 size-[1080px]">{img("ranting.webp")}</div>
       <div className="absolute inset-x-0 top-[790px] z-[31] mx-auto w-[1260px] max-w-none -translate-x-[8%]">
         <img src={`${A}/flower-bed.webp`} alt="" loading="lazy" decoding="async" className="w-full max-w-none" />
       </div>

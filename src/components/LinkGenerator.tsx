@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { withGuest } from "@/lib/guest";
 import { couple, event } from "@/lib/data";
 
@@ -33,16 +33,20 @@ type Row = {
 };
 
 export default function LinkGenerator() {
-  const [origin, setOrigin] = useState("");
   const [raw, setRaw] = useState(
     "Bapak Budi Santoso\nKeluarga Bapak & Ibu Sari\nFahmi Muzakky"
   );
   const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
   const [copied, setCopied] = useState<string | null>(null);
 
-  // origin diambil di browser supaya link otomatis benar baik di localhost
+  // origin dibaca langsung dari browser (bukan lewat effect+setState, yang
+  // memicu render berantai) supaya link otomatis benar baik di localhost
   // maupun di domain Vercel — tanpa perlu env var tambahan.
-  useEffect(() => setOrigin(window.location.origin), []);
+  const origin = useSyncExternalStore(
+    () => () => {},
+    () => window.location.origin,
+    () => ""
+  );
 
   const rows = useMemo<Row[]>(() => {
     const seen = new Set<string>();
