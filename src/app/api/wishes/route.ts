@@ -1,29 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addWish, listWishes, sheetsEnabled, type Wish } from "@/lib/wishesStore";
+import { addWish, sheetsEnabled, type Wish } from "@/lib/wishesStore";
 
 export type { Wish };
 
-// Selalu ambil data terbaru — daftar ucapan berubah tiap ada tamu mengisi.
+// Hanya menerima kiriman; tidak ada GET. Daftar ucapan tidak ditampilkan di
+// undangan, dan tanpa GET tidak ada endpoint publik yang bisa membocorkan
+// seluruh nama, alamat, dan ucapan tamu. Mempelai membacanya di Spreadsheet.
 export const dynamic = "force-dynamic";
 
 const ATTENDANCE = ["hadir", "tidak_hadir", "ragu"] as const;
 const MAX_GUESTS = 20;
 const MAX_LEN = { name: 80, address: 120, message: 600 };
-
-export async function GET() {
-  try {
-    const wishes = await listWishes(50);
-    return NextResponse.json({
-      wishes,
-      ...(sheetsEnabled ? {} : { note: "Google Sheets belum dikonfigurasi — data sementara saja." }),
-    });
-  } catch (e) {
-    return NextResponse.json(
-      { wishes: [], error: e instanceof Error ? e.message : "Gagal memuat ucapan." },
-      { status: 500 }
-    );
-  }
-}
 
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>;
@@ -54,10 +41,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const wish = await addWish({ name, attendance, guests, address, message });
+    await addWish({ name, attendance, guests, address, message });
     return NextResponse.json({
-      wish,
-      ...(sheetsEnabled ? {} : { note: "Google Sheets belum dikonfigurasi — data sementara saja." }),
+      ok: true,
+      ...(sheetsEnabled ? {} : { note: "Google Sheets belum dikonfigurasi — data tidak tersimpan." }),
     });
   } catch (e) {
     return NextResponse.json(

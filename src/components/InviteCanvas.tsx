@@ -564,15 +564,11 @@ function RsvpCard({ guestName }: { guestName: string }) {
   const [guests, setGuests] = useState("1");
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
-  const [wishes, setWishes] = useState<Wish[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
 
   // guestName sudah tersedia saat render pertama (dari useSearchParams),
   // jadi cukup dipakai sebagai nilai awal useState di atas — tidak perlu
   // disinkronkan lewat effect.
-  useEffect(() => {
-    fetch("/api/wishes").then((r) => r.json()).then((d) => setWishes(d.wishes ?? [])).catch(() => {});
-  }, []);
 
   const need = attendance !== "tidak_hadir";
   const labels: Record<Wish["attendance"], string> = { hadir: "Hadir", tidak_hadir: "Tidak hadir", ragu: "Masih Ragu" };
@@ -588,8 +584,6 @@ function RsvpCard({ guestName }: { guestName: string }) {
         body: JSON.stringify({ name, attendance, guests: need ? guests : null, address, message }),
       });
       if (!res.ok) throw new Error();
-      const d = await res.json();
-      setWishes((p) => [d.wish, ...p]);
       setMessage("");
       setStatus("sent");
       setTimeout(() => setStatus("idle"), 2500);
@@ -642,25 +636,6 @@ function RsvpCard({ guestName }: { guestName: string }) {
         </button>
         {status === "error" && <p className="text-center text-[32px] text-red-600">Gagal mengirim, coba lagi.</p>}
       </form>
-
-      {wishes.length > 0 && (
-        <div className="mt-[70px] text-left">
-          <h3 className="mb-[30px] text-center text-[52px] font-semibold text-black">Best Wishes</h3>
-          <div className="flex max-h-[900px] flex-col gap-[24px] overflow-y-auto">
-            {wishes.map((w) => (
-              <div key={w.id} className="rounded-[28px] bg-[#eafcff] px-[36px] py-[28px]">
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-[39px] font-semibold text-black">{w.name}</span>
-                  <span className="shrink-0 text-[30px] font-semibold text-black/45">
-                    {labels[w.attendance]}{w.guests ? ` · ${w.guests}` : ""}
-                  </span>
-                </div>
-                <p className="mt-[10px] text-[37px] leading-relaxed text-black/70">{w.message}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </Card>
   );
 }

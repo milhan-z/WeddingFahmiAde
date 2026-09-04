@@ -10,6 +10,11 @@
  * URL Apps Script disimpan sebagai env var TANPA prefix NEXT_PUBLIC, jadi
  * hanya dipakai di server. Browser tamu tidak pernah melihatnya, dan tidak
  * ada masalah CORS karena permintaan dijembatani route /api/wishes.
+ *
+ * Sengaja HANYA menulis, tidak membaca. Daftar ucapan tidak ditampilkan di
+ * undangan, jadi tidak ada satu pun jalur yang bisa memuntahkan seluruh
+ * nama, alamat, dan ucapan tamu ke publik. Mempelai membacanya langsung
+ * di Spreadsheet.
  */
 export type Wish = {
   id: string;
@@ -27,37 +32,11 @@ const ENDPOINT = process.env.SHEETS_WEBAPP_URL?.trim();
 export const sheetsEnabled = Boolean(ENDPOINT);
 
 /**
- * Cadangan saat URL belum diisi: tersimpan di memori proses.
- * TIDAK permanen — hilang tiap redeploy / server idle. Cukup untuk mencoba,
- * jangan dipakai saat undangan sudah disebar.
+ * Cadangan saat URL belum diisi: hanya dihitung, tidak disimpan.
+ * TIDAK permanen. Cukup untuk mencoba tampilan, jangan dipakai saat
+ * undangan sudah disebar.
  */
-const memory: Wish[] = [];
-
-function normalise(raw: Record<string, unknown>): Wish {
-  const guests = Number(raw.guests);
-  return {
-    id: String(raw.id ?? crypto.randomUUID()),
-    name: String(raw.name ?? "").trim(),
-    attendance: (["hadir", "tidak_hadir", "ragu"] as const).includes(
-      raw.attendance as Wish["attendance"]
-    )
-      ? (raw.attendance as Wish["attendance"])
-      : "hadir",
-    guests: Number.isFinite(guests) && guests > 0 ? guests : null,
-    address: raw.address ? String(raw.address) : null,
-    message: String(raw.message ?? "").trim(),
-    created_at: String(raw.created_at ?? new Date().toISOString()),
-  };
-}
-
-export async function listWishes(limit = 50): Promise<Wish[]> {
-  if (!ENDPOINT) return [...memory].reverse().slice(0, limit);
-
-  const res = await fetch(ENDPOINT, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Sheets GET ${res.status}`);
-  const data = (await res.json()) as { wishes?: Record<string, unknown>[] };
-  return (data.wishes ?? []).map(normalise).slice(0, limit);
-}
+let memoryCount = 0;
 
 export async function addWish(input: Omit<Wish, "id" | "created_at">): Promise<Wish> {
   const wish: Wish = {
@@ -67,7 +46,7 @@ export async function addWish(input: Omit<Wish, "id" | "created_at">): Promise<W
   };
 
   if (!ENDPOINT) {
-    memory.push(wish);
+    memoryCount += 1;
     return wish;
   }
 
@@ -77,6 +56,36 @@ export async function addWish(input: Omit<Wish, "id" | "created_at">): Promise<W
     body: JSON.stringify(wish),
     cache: "no-store",
   });
-  if (!res.ok) throw new Error(`Sheets POST ${res.status}`);
+
+  /* JANGAN percaya res.ok saja. Apps Script membalas 200 dengan halaman
+     HTML berjudul "Salah" ketika skripnya sendiri melempar error — misalnya
+     tab "RSVP" belum ada. Kalau hanya res.ok yang dicek, tamu melihat
+     "Terkirim, terima kasih!" padahal tidak ada satu baris pun tersimpan.
+     Untuk RSVP pernikahan, gagal diam-diam seperti itu adalah kegagalan
+     yang paling mahal: barunya ketahuan saat rekap tamu dibutuhkan. */
+  const text = await res.text();
+  let payload: { ok?: boolean; error?: string } | null = null;
+  try {
+    payload = JSON.parse(text);
+  } catch {
+    /* biarkan null — ditangani di bawah */
+  }
+
+  if (!res.ok || !payload?.ok) {
+    const detail =
+      payload?.error ??
+      text
+        .replace(/<script[\s\S]*?<\/script>/gi, " ")
+        .replace(/<style[\s\S]*?<\/style>/gi, " ")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/&#39;/g, "'")
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, "&")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 300);
+    throw new Error(`Sheets POST ${res.status}: ${detail || "balasan tidak dikenali"}`);
+  }
+
   return wish;
 }
