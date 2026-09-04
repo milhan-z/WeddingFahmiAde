@@ -47,6 +47,17 @@ export async function POST(req: NextRequest) {
       ...(sheetsEnabled ? {} : { note: "Google Sheets belum dikonfigurasi — data tidak tersimpan." }),
     });
   } catch (e) {
+    /* Jaring pengaman terakhir: kalau Spreadsheet menolak, kiriman tamu
+       dicetak utuh ke log server. Undangan hanya hidup beberapa minggu dan
+       tiap RSVP mewakili orang sungguhan yang sudah repot mengisi — kalau
+       Sheets bermasalah di hari-H, datanya masih bisa diambil kembali dari
+       Vercel -> Logs alih-alih hilang untuk selamanya. */
+    console.error(
+      "[RSVP GAGAL SIMPAN] pulihkan baris ini secara manual:",
+      JSON.stringify({ name, attendance, guests, address, message, created_at: new Date().toISOString() }),
+      "| penyebab:",
+      e instanceof Error ? e.message : e
+    );
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Gagal menyimpan." },
       { status: 500 }
