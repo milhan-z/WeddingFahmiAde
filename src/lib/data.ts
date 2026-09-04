@@ -11,15 +11,15 @@ export const couple = {
     shortName: "Fahmi",
     order: "Putra Kedua dari",
     parents: "Bapak H. Ramli & Ibu Hj. Murtining",
-    // TODO: isi username Instagram (tanpa @). Kosongkan kalau tak ada tombol.
-    instagram: "fahmimuzakky",
+    // Username Instagram (tanpa @).
+    instagram: "fahmimuzakky_",
   },
   bride: {
     name: "Ade Fitri Kurniasih",
     shortName: "Ade",
     order: "Putri Bungsu dari",
     parents: "Bapak H. Anda & Ibu Hj. Zubaidah",
-    instagram: "",
+    instagram: "adefitrii_",
   },
   /** Dipakai di judul & penutup. */
   pairName: "Fahmi & Ade",

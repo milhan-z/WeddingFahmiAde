@@ -31,6 +31,13 @@
 
 html {
   scroll-behavior: smooth;
+  /* kanvas berskala tidak boleh menimbulkan geser horizontal sedikit pun */
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  /* cegah iOS menyesuaikan ukuran teks sendiri saat rotasi */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {

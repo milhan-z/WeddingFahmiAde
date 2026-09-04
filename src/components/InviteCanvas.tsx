@@ -52,6 +52,64 @@ function CoverArt({ guestName }: { guestName: string }) {
 /* ══════════════════════════ STORY: bagian atas (Figma) ══════════════════════════ */
 const TOP_H = 7125;
 
+/**
+ * Pemutar video perjalanan.
+ *
+ * - `preload="none"` + poster: berkasnya ~13MB, jadi baru diunduh kalau tamu
+ *   benar-benar menekan play — tidak membebani kuota saat undangan dibuka.
+ * - `muted`: videonya memang TIDAK punya trek audio (dicek dengan ffmpeg),
+ *   jadi lagu latar yang jadi soundtrack-nya. Tanpa atribut ini browser
+ *   memblokir pemutaran karena dianggap media bersuara tanpa gestur.
+ */
+function JourneyVideo() {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
+
+  async function start() {
+    const v = ref.current;
+    if (!v) return;
+    try {
+      await v.play();
+      setStarted(true);
+    } catch {
+      // kalau tetap ditolak, biarkan kontrol bawaan muncul agar tamu bisa
+      // menekan play sendiri
+      setStarted(true);
+    }
+  }
+
+  return (
+    <div className="absolute inset-0">
+      <video
+        ref={ref}
+        className="size-full object-cover"
+        src="/video/journey.mp4"
+        poster="/video/poster.webp"
+        preload="none"
+        playsInline
+        muted
+        controls={started}
+      />
+      {!started && (
+        <button
+          onClick={start}
+          aria-label="Putar video perjalanan"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-black/35"
+        >
+          <span className="flex size-[170px] items-center justify-center rounded-full bg-white/95 shadow-lg">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+              <path d="M8 5.5v13l11-6.5-11-6.5Z" fill="#241019" />
+            </svg>
+          </span>
+          <span className="rounded-full bg-black/45 px-10 py-4 text-[44px] font-medium text-white">
+            Putar Video
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) {
   return (
     <div className="relative w-[1080px]" style={{ height: TOP_H }}>
@@ -69,12 +127,7 @@ function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) 
 
       {/* video warung */}
       <div className="absolute left-[65px] top-[2147px] h-[1692px] w-[951px] overflow-hidden bg-black">
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
-          <span className="flex size-[150px] items-center justify-center rounded-full bg-white/95 shadow-lg">
-            <svg width="70" height="70" viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5-11-6.5Z" fill="#241019" /></svg>
-          </span>
-          <span className="rounded-full bg-white/15 px-8 py-3 text-[44px] font-medium text-white/90">Video menyusul</span>
-        </div>
+        <JourneyVideo />
       </div>
       <div className="absolute left-[-236px] top-[1855px] h-[746px] w-[1553px] overflow-hidden pointer-events-none">
         <img alt="" src={`${A}/atap.webp`} className="absolute left-0 top-[-47.11%] h-[147.17%] w-full max-w-none" />
@@ -86,16 +139,16 @@ function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) 
         <img alt="" src={`${A}/bats.webp`} className="absolute left-[-209.66%] top-[-0.04%] h-[100.08%] w-[519.33%] max-w-none" />
       </div>
 
-      {/* Bride & Groom */}
-      <div className="absolute left-1/2 top-[4431px] -translate-x-1/2 text-center font-sans text-black">
-        <p className="text-[60.7px] font-bold leading-tight">Bride &amp;<br />Groom</p>
+      {/* Bride & Groom — tipografi elegan (script + serif), bukan sans tebal */}
+      <div className="absolute left-1/2 top-[4400px] -translate-x-1/2 text-center text-maroon">
+        <p className="font-script text-[104px] leading-[0.95]">Bride &amp;<br />Groom</p>
       </div>
-      <div className="absolute left-1/2 top-[4680px] w-[760px] -translate-x-1/2 text-center font-sans text-[36px] font-semibold leading-normal text-black">
+      <div className="absolute left-1/2 top-[4690px] w-[770px] -translate-x-1/2 text-center font-body text-[38px] leading-relaxed text-ink">
         {couple.intro}
       </div>
-      <PersonBlock topName={4990} name={couple.groom} ig={groomIg} />
-      <p className="absolute left-1/2 top-[5660px] -translate-x-1/2 text-center font-sans text-[173px] font-bold leading-none text-black">&amp;</p>
-      <PersonBlock topName={6028} name={couple.bride} ig={brideIg} />
+      <PersonBlock topName={4960} name={couple.groom} ig={groomIg} />
+      <p className="absolute left-1/2 top-[5640px] -translate-x-1/2 text-center font-script text-[150px] leading-none text-mustard">&amp;</p>
+      <PersonBlock topName={5998} name={couple.bride} ig={brideIg} />
     </div>
   );
 }
@@ -110,18 +163,24 @@ function PersonBlock({
   ig?: string;
 }) {
   return (
-    <div className="absolute left-1/2 -translate-x-1/2 text-center font-sans text-black" style={{ top: topName, width: 900 }}>
-      <p className="text-[60.7px] font-bold leading-tight">{name.name}</p>
-      <p className="mt-[16px] text-[36px] font-semibold leading-normal">
+    <div className="absolute left-1/2 -translate-x-1/2 text-center" style={{ top: topName, width: 900 }}>
+      <p className="font-script text-[86px] leading-none text-mustard">{name.shortName}</p>
+      <p className="mt-[26px] font-serif text-[62px] font-semibold leading-tight text-maroon">{name.name}</p>
+      <p className="mx-auto mt-[20px] max-w-[700px] font-body text-[38px] leading-normal text-ink/80">
         {name.order} {name.parents}
       </p>
-      <div className="mt-[22px] flex justify-center">
+      <div className="mt-[26px] flex justify-center">
         <a
           href={ig ? `https://instagram.com/${ig}` : undefined}
           target="_blank"
           rel="noopener noreferrer"
-          className={`inline-flex items-center gap-2 rounded-[33px] bg-black px-[35px] py-[18px] text-[40px] font-bold text-white ${ig ? "" : "pointer-events-none opacity-60"}`}
+          className={`inline-flex items-center gap-[14px] rounded-full bg-maroon px-[40px] py-[18px] font-serif text-[36px] tracking-wide text-cream ${ig ? "" : "pointer-events-none opacity-50"}`}
         >
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
+            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="currentColor" strokeWidth="1.8" />
+            <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.8" />
+            <circle cx="17.4" cy="6.6" r="1.4" fill="currentColor" />
+          </svg>
           Instagram
         </a>
       </div>
@@ -133,8 +192,8 @@ function PersonBlock({
 
 function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
-    <div className="mx-auto w-[903px] rounded-[80px] bg-white px-[75px] py-[90px] text-center font-sans text-black shadow-[0_24px_60px_rgba(20,40,60,0.12)]">
-      {title && <h2 className="mb-[50px] text-[64px] font-extrabold leading-tight">{title}</h2>}
+    <div className="mx-auto w-[903px] rounded-[80px] bg-white px-[75px] py-[90px] text-center font-body text-ink shadow-[0_24px_60px_rgba(20,40,60,0.12)]">
+      {title && <h2 className="mb-[50px] font-script text-[92px] leading-none text-maroon">{title}</h2>}
       {children}
     </div>
   );
@@ -235,6 +294,11 @@ function StoryContent({ guestName }: { guestName: string }) {
             <div className="mt-[50px] flex flex-col gap-[34px]">
               {gift.accounts.map((acc) => (
                 <div key={acc.number} className="rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
+                  <img
+                    src={`${A}/${acc.bank.toLowerCase().includes("bca") ? "logo-bca" : "logo-mandiri"}.webp`}
+                    alt={acc.bank}
+                    className="mx-auto mb-[20px] h-[64px] w-auto object-contain"
+                  />
                   <p className="text-[44px] font-extrabold uppercase tracking-wide text-black">{acc.bank}</p>
                   <p className="mt-[16px] text-[54px] font-bold tracking-[0.08em] text-black">{acc.number}</p>
                   <p className="mt-[8px] text-[37px] text-black/65">a.n {acc.holder}</p>
@@ -296,9 +360,9 @@ function RsvpCard({ guestName }: { guestName: string }) {
   const [wishes, setWishes] = useState<Wish[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
 
-  useEffect(() => {
-    if (guestName) setName((c) => c || guestName);
-  }, [guestName]);
+  // guestName sudah tersedia saat render pertama (dari useSearchParams),
+  // jadi cukup dipakai sebagai nilai awal useState di atas — tidak perlu
+  // disinkronkan lewat effect.
   useEffect(() => {
     fetch("/api/wishes").then((r) => r.json()).then((d) => setWishes(d.wishes ?? [])).catch(() => {});
   }, []);
@@ -432,6 +496,8 @@ export default function InviteCanvas({
 }) {
   const [opened, setOpened] = useState(false);
   const [fading, setFading] = useState(false);
+  const [musicOn, setMusicOn] = useState(false);
+  const audio = useRef<HTMLAudioElement>(null);
 
   function open() {
     setFading(true);
@@ -439,22 +505,60 @@ export default function InviteCanvas({
       setOpened(true);
       setFading(false);
       window.scrollTo({ top: 0, behavior: "instant" });
+      // Autoplay hanya diizinkan browser kalau dipicu gestur tamu — di sini
+      // pemicunya tombol "Buka Undangan", jadi aman.
+      audio.current?.play().then(() => setMusicOn(true)).catch(() => setMusicOn(false));
     }, 450);
   }
 
+  function toggleMusic() {
+    const a = audio.current;
+    if (!a) return;
+    if (a.paused) a.play().then(() => setMusicOn(true)).catch(() => {});
+    else {
+      a.pause();
+      setMusicOn(false);
+    }
+  }
+
+
   return (
-    <div className="mx-auto min-h-dvh w-full max-w-[480px] transition-opacity duration-500" style={{ opacity: fading ? 0 : 1, background: CYAN }}>
+    <div className="mx-auto min-h-dvh w-full max-w-[480px] overflow-x-hidden transition-opacity duration-500" style={{ opacity: fading ? 0 : 1, background: CYAN }}>
+      <audio ref={audio} src="/music/song.m4a" loop preload="none" />
+
       {opened ? (
-        <StoryScaler>
-          {/* overflow-hidden: dekorasi Figma (atap, bata, semak) sengaja
-              melebihi 1080px; tanpa ini kanvas meluber ke samping dan
-              halaman bisa digeser horizontal. */}
-          <div className="w-[1080px] overflow-hidden">
-            <StoryTop groomIg={groomIg} brideIg={brideIg} />
-            <StoryContent guestName={guestName} />
-            <StoryFooter />
-          </div>
-        </StoryScaler>
+        <>
+          <StoryScaler>
+            {/* overflow-hidden: dekorasi Figma (atap, bata, semak) sengaja
+                melebihi 1080px; tanpa ini kanvas meluber ke samping dan
+                halaman bisa digeser horizontal. */}
+            <div className="w-[1080px] overflow-hidden">
+              <StoryTop groomIg={groomIg} brideIg={brideIg} />
+              <StoryContent guestName={guestName} />
+              <StoryFooter />
+            </div>
+          </StoryScaler>
+
+          {/* tombol musik: di luar kanvas supaya ukurannya tidak ikut diskala */}
+          <button
+            onClick={toggleMusic}
+            aria-label={musicOn ? "Matikan musik" : "Nyalakan musik"}
+            className="fixed bottom-5 right-5 z-50 flex size-12 items-center justify-center rounded-full bg-[#241009]/85 text-white shadow-lg backdrop-blur-sm active:scale-95"
+            style={{ right: "max(1.25rem, calc((100vw - 480px) / 2 + 1.25rem))" }}
+          >
+            {musicOn ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
+                <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
+                <path d="m17 9 4 6M21 9l-4 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+        </>
       ) : (
         <CoverScaler onOpen={open}>
           <CoverArt guestName={guestName} />

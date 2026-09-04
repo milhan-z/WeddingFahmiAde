@@ -41,7 +41,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#5c1f2e",
+  // Undangan ini kanvas berskala: cubit-zoom malah merusak tata letaknya,
+  // jadi zoom dikunci dan lebar dipaku ke lebar layar.
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+  themeColor: "#241009",
 };
 
 export default function RootLayout({
