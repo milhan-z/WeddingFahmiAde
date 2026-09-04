@@ -71,6 +71,8 @@ type Row = {
   duplicate: boolean;
 };
 
+type Health = { ok: boolean; title: string; detail: string; raw?: string };
+
 export default function LinkGenerator() {
   const savedNames = useSyncExternalStore(
     noSubscribe,
@@ -150,6 +152,26 @@ export default function LinkGenerator() {
 
   const warnings = rows.filter((r) => r.tooLong || r.duplicate).length;
 
+  const [health, setHealth] = useState<Health | null>(null);
+  const [checking, setChecking] = useState(false);
+
+  const cekKoneksi = useCallback(async () => {
+    setChecking(true);
+    setHealth(null);
+    try {
+      const res = await fetch("/api/wishes/health", { method: "POST" });
+      setHealth(await res.json());
+    } catch {
+      setHealth({
+        ok: false,
+        title: "Tidak bisa menghubungi server",
+        detail: "Periksa koneksi internet, lalu coba lagi.",
+      });
+    } finally {
+      setChecking(false);
+    }
+  }, []);
+
   return (
     <div className="mx-auto max-w-4xl px-5 py-10 font-sans">
       <header className="mb-8">
@@ -166,6 +188,50 @@ export default function LinkGenerator() {
           aman ditutup dan dilanjutkan besok.
         </p>
       </header>
+
+      {/* Ditaruh paling atas: selama RSVP belum tersimpan, link tidak boleh
+          disebar — tamu akan mengisi form yang datanya hilang. */}
+      <section className="mb-8 rounded-lg border border-ink/10 bg-white p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold text-ink">
+              Sebelum menyebar link: pastikan RSVP tersimpan
+            </h2>
+            <p className="mt-0.5 text-xs text-ink/55">
+              Mengirim satu baris uji ke Google Sheets lewat jalur yang sama
+              persis dengan kiriman tamu.
+            </p>
+          </div>
+          <button
+            onClick={cekKoneksi}
+            disabled={checking}
+            className="shrink-0 rounded-lg border border-maroon/30 px-4 py-2 text-sm text-maroon transition hover:bg-maroon/5 disabled:opacity-50"
+          >
+            {checking ? "Menguji..." : "Tes koneksi"}
+          </button>
+        </div>
+
+        {health && (
+          <div
+            className={`mt-3 rounded-lg px-3 py-2.5 text-xs ring-1 ${
+              health.ok
+                ? "bg-emerald-50 text-emerald-900 ring-emerald-200"
+                : "bg-amber-50 text-amber-900 ring-amber-200"
+            }`}
+          >
+            <p className="font-semibold">
+              {health.ok ? "✓ " : "⚠ "}
+              {health.title}
+            </p>
+            <p className="mt-1 leading-relaxed">{health.detail}</p>
+            {health.raw && (
+              <p className="mt-1.5 break-all font-mono text-[11px] opacity-60">
+                {health.raw}
+              </p>
+            )}
+          </div>
+        )}
+      </section>
 
       <div className="grid gap-6 md:grid-cols-2">
         <div>
