@@ -541,17 +541,10 @@ function TransitionScene() {
         />
       </div>
 
-      {/* dahan + hamparan bunga menutup perbatasan taman -> zona gelap.
-          Dipakai flower-bed (garland horizontal) karena `runout` hanyalah
-          semak hijau polos — tidak akan memberi hamparan bunga seperti
-          rancangan. Dua lapis, sedikit bergeser, agar rapat. */}
-      <div className="animate-sway-soft absolute left-[-6px] top-[680px] z-30 size-[1080px]">{img("ranting.webp")}</div>
-      <div className="absolute inset-x-0 top-[790px] z-[31] mx-auto w-[1260px] max-w-none -translate-x-[8%]">
-        <img src={`${A}/flower-bed.webp`} alt="" loading="lazy" decoding="async" className="w-full max-w-none" />
-      </div>
-      <div className="absolute inset-x-0 top-[856px] z-[32] mx-auto w-[1340px] max-w-none -translate-x-[12%]">
-        <img src={`${A}/flower-bed.webp`} alt="" loading="lazy" decoding="async" className="w-full max-w-none -scale-x-100" />
-      </div>
+      {/* dahan menutup perbatasan taman -> zona gelap. Hamparan bunga
+          (flower-bed) dihapus atas permintaan: semak bawaan scene-couple
+          sudah cukup, dan garland-nya membuat batasnya terasa ramai. */}
+      <div className="animate-sway-soft absolute left-[-6px] top-[620px] z-30 size-[1080px]">{img("ranting.webp")}</div>
     </div>
   );
 }
