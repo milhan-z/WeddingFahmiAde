@@ -74,23 +74,53 @@ const TOP_H = 7125;
  */
 function JourneyVideo() {
   const ref = useRef<HTMLVideoElement>(null);
-  const [started, setStarted] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+  const [playing, setPlaying] = useState(false);
+  /** Kalau tamu menghentikan sendiri, jangan dipaksa main lagi saat digulir. */
+  const pausedByGuest = useRef(false);
 
-  async function start() {
+  useEffect(() => {
+    const v = ref.current;
+    const w = wrap.current;
+    if (!v || !w) return;
+
+    // Hormati mode hemat data / koneksi lambat: video ~13MB, jangan diunduh
+    // otomatis kalau tamu jelas-jelas sedang irit kuota.
+    const conn = (
+      navigator as Navigator & {
+        connection?: { saveData?: boolean; effectiveType?: string };
+      }
+    ).connection;
+    const thrifty = !!conn?.saveData || /(^|-)2g$/.test(conn?.effectiveType ?? "");
+
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          if (!pausedByGuest.current && !thrifty) v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
+      },
+      { threshold: 0.45 }
+    );
+    io.observe(w);
+    return () => io.disconnect();
+  }, []);
+
+  function toggle() {
     const v = ref.current;
     if (!v) return;
-    try {
-      await v.play();
-      setStarted(true);
-    } catch {
-      // kalau tetap ditolak, biarkan kontrol bawaan muncul agar tamu bisa
-      // menekan play sendiri
-      setStarted(true);
+    if (v.paused) {
+      pausedByGuest.current = false;
+      v.play().catch(() => {});
+    } else {
+      pausedByGuest.current = true;
+      v.pause();
     }
   }
 
   return (
-    <div className="absolute inset-0">
+    <div ref={wrap} className="absolute inset-0">
       <video
         ref={ref}
         className="size-full object-cover"
@@ -99,21 +129,33 @@ function JourneyVideo() {
         preload="none"
         playsInline
         muted
-        controls={started}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
       />
-      {!started && (
+
+      {/* Tombol besar di tengah saat berhenti — mudah disentuh walau kanvas
+          diskala. Saat berjalan, mengecil ke pojok agar tidak menutupi video. */}
+      {playing ? (
         <button
-          onClick={start}
+          onClick={toggle}
+          aria-label="Hentikan video"
+          className="absolute bottom-[40px] right-[40px] flex size-[130px] items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm active:scale-95"
+        >
+          <svg width="54" height="54" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor" />
+            <rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor" />
+          </svg>
+        </button>
+      ) : (
+        <button
+          onClick={toggle}
           aria-label="Putar video perjalanan"
-          className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-black/35"
+          className="absolute inset-0 flex items-center justify-center bg-black/30"
         >
           <span className="flex size-[170px] items-center justify-center rounded-full bg-white/95 shadow-lg">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path d="M8 5.5v13l11-6.5-11-6.5Z" fill="#241019" />
             </svg>
-          </span>
-          <span className="rounded-full bg-black/45 px-10 py-4 text-[44px] font-normal text-white">
-            Putar Video
           </span>
         </button>
       )}
@@ -346,18 +388,45 @@ function StoryContent({ guestName }: { guestName: string }) {
 
 /** Transisi bergaya scene: pasangan candid (slenei) di taman, dari langit
  *  cyan memudar ke tirai gelap (Lantau). Dekoratif — tanpa teks. */
+/**
+ * Urutan lapisan (dari belakang ke depan) dibuat eksplisit supaya batas
+ * cyan -> gelap tidak terlihat sebagai garis lurus yang kaku:
+ *   z-0  latar gelap (Lantau) di bagian bawah
+ *   z-10 semak — di BELAKANG pasangan, dipasang rendah seperti pagar tanaman
+ *   z-20 pasangan candid
+ *   z-30 dahan + bunga — menimpa perbatasan sehingga peralihannya menyatu
+ */
 function TransitionScene() {
   return (
-    <div className="relative w-[1080px] overflow-hidden" style={{ height: 1500, background: `linear-gradient(${CYAN} 0%, ${CYAN} 42%, #28110b 100%)` }}>
-      {/* semak di belakang */}
-      <div className="absolute left-[-180px] top-[360px] size-[900px]">{img("kk.webp")}</div>
-      <div className="absolute left-[560px] top-[330px] size-[900px]">{img("kk.webp")}</div>
+    <div className="relative w-[1080px] overflow-hidden" style={{ height: 1420, background: CYAN }}>
+      {/* latar gelap bawah — sengaja di lapisan PALING BAWAH agar tertutup
+          dedaunan & dahan, bukan memotong lurus */}
+      <div
+        className="absolute inset-x-0 bottom-0 z-0"
+        style={{
+          height: 520,
+          backgroundColor: "#28110b",
+          backgroundImage: `url(${A}/lantau.webp)`,
+          backgroundSize: "1080px auto",
+          backgroundRepeat: "repeat",
+          backgroundPosition: "top center",
+        }}
+      />
+
+      {/* semak: duduk rendah di belakang pasangan, melebar ke tepi */}
+      <div className="absolute left-[-260px] top-[560px] z-10 size-[860px]">{img("kk.webp")}</div>
+      <div className="absolute left-[500px] top-[540px] z-10 size-[880px]">{img("kk.webp")}</div>
+      <div className="absolute left-[170px] top-[620px] z-10 size-[760px]">{img("kk.webp")}</div>
+
       {/* pasangan candid */}
-      <div className="absolute left-1/2 top-[300px] h-[1000px] w-[1000px] -translate-x-1/2">{img("slenei.webp")}</div>
-      {/* dahan berbunga sebagai garis batas ke zona gelap */}
-      <div className="absolute left-[-6px] top-[880px] size-[1080px]">{img("ranting.webp")}</div>
-      <div className="absolute left-[-160px] top-[980px] size-[760px]">{img("runout.webp")}</div>
-      <div className="absolute left-[480px] top-[980px] size-[760px]">{img("runout.webp")}</div>
+      <div className="absolute left-1/2 top-[250px] z-20 h-[1000px] w-[1000px] -translate-x-1/2">
+        {img("slenei.webp")}
+      </div>
+
+      {/* dahan + bunga menimpa perbatasan cyan/gelap */}
+      <div className="absolute left-[-6px] top-[760px] z-30 size-[1080px]">{img("ranting.webp")}</div>
+      <div className="absolute left-[-210px] top-[830px] z-30 size-[720px]">{img("runout.webp")}</div>
+      <div className="absolute left-[560px] top-[820px] z-30 size-[720px]">{img("runout.webp")}</div>
     </div>
   );
 }
@@ -509,6 +578,8 @@ export default function InviteCanvas({
   const [fading, setFading] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
+  /** Niat tamu soal musik — dipakai saat kembali dari tab/aplikasi lain. */
+  const wantsMusic = useRef(false);
 
   function open() {
     setFading(true);
@@ -518,6 +589,7 @@ export default function InviteCanvas({
       window.scrollTo({ top: 0, behavior: "instant" });
       // Autoplay hanya diizinkan browser kalau dipicu gestur tamu — di sini
       // pemicunya tombol "Buka Undangan", jadi aman.
+      wantsMusic.current = true;
       audio.current?.play().then(() => setMusicOn(true)).catch(() => setMusicOn(false));
     }, 450);
   }
@@ -525,12 +597,48 @@ export default function InviteCanvas({
   function toggleMusic() {
     const a = audio.current;
     if (!a) return;
-    if (a.paused) a.play().then(() => setMusicOn(true)).catch(() => {});
-    else {
+    if (a.paused) {
+      wantsMusic.current = true;
+      a.play().then(() => setMusicOn(true)).catch(() => {});
+    } else {
+      wantsMusic.current = false;
       a.pause();
       setMusicOn(false);
     }
   }
+
+  /**
+   * Lagu berhenti begitu tamu meninggalkan halaman (pindah tab, kunci layar,
+   * buka aplikasi lain) — tanpa ini musik terus jalan di latar. Dilanjutkan
+   * lagi saat tamu kembali, tapi hanya kalau memang tadinya menyala.
+   */
+  useEffect(() => {
+    const a = audio.current;
+    if (!a) return;
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        a.pause();
+        setMusicOn(false);
+      } else if (wantsMusic.current) {
+        a.play().then(() => setMusicOn(true)).catch(() => {});
+      }
+    };
+    const onLeave = () => {
+      a.pause();
+      setMusicOn(false);
+    };
+
+    // Sengaja TIDAK memakai window "blur": itu ikut terpicu saat tamu cuma
+    // menyentuh address bar, jadi musik mati tanpa alasan. visibilitychange
+    // sudah menangani pindah tab / aplikasi / layar terkunci.
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", onLeave);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", onLeave);
+    };
+  }, []);
 
 
   return (
