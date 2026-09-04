@@ -42,7 +42,7 @@ function CoverArt({ guestName }: { guestName: string }) {
         <img alt="The Wedding of Ade & Fahmi" src={`${A}/cover-title.webp`} className="absolute inset-0 size-full max-w-none object-cover" />
       </div>
       <div className="absolute left-1/2 top-[1360px] w-[760px] -translate-x-1/2 rounded-[60px] bg-white/55 px-10 py-7 text-center backdrop-blur-[2px]">
-        <p className="font-serif text-[28px] uppercase tracking-[0.3em] text-[#5c1f2e]/75">Kepada Yth.</p>
+        <p className="font-serif text-[37px] uppercase tracking-[0.3em] text-[#5c1f2e]/75">Kepada Yth.</p>
         <p className="mt-1 font-serif text-[50px] font-semibold leading-tight text-[#5c1f2e]">{guestName || "Tamu Undangan"}</p>
       </div>
     </div>
@@ -73,7 +73,7 @@ function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) 
           <span className="flex size-[150px] items-center justify-center rounded-full bg-white/95 shadow-lg">
             <svg width="70" height="70" viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5-11-6.5Z" fill="#241019" /></svg>
           </span>
-          <span className="rounded-full bg-white/15 px-8 py-3 text-[34px] font-medium text-white/90">Video menyusul</span>
+          <span className="rounded-full bg-white/15 px-8 py-3 text-[44px] font-medium text-white/90">Video menyusul</span>
         </div>
       </div>
       <div className="absolute left-[-236px] top-[1855px] h-[746px] w-[1553px] overflow-hidden pointer-events-none">
@@ -90,7 +90,7 @@ function StoryTop({ groomIg, brideIg }: { groomIg?: string; brideIg?: string }) 
       <div className="absolute left-1/2 top-[4431px] -translate-x-1/2 text-center font-sans text-black">
         <p className="text-[60.7px] font-bold leading-tight">Bride &amp;<br />Groom</p>
       </div>
-      <div className="absolute left-1/2 top-[4680px] w-[760px] -translate-x-1/2 text-center font-sans text-[27.5px] font-semibold leading-normal text-black">
+      <div className="absolute left-1/2 top-[4680px] w-[760px] -translate-x-1/2 text-center font-sans text-[36px] font-semibold leading-normal text-black">
         {couple.intro}
       </div>
       <PersonBlock topName={4990} name={couple.groom} ig={groomIg} />
@@ -112,7 +112,7 @@ function PersonBlock({
   return (
     <div className="absolute left-1/2 -translate-x-1/2 text-center font-sans text-black" style={{ top: topName, width: 900 }}>
       <p className="text-[60.7px] font-bold leading-tight">{name.name}</p>
-      <p className="mt-[16px] text-[27.5px] font-semibold leading-normal">
+      <p className="mt-[16px] text-[36px] font-semibold leading-normal">
         {name.order} {name.parents}
       </p>
       <div className="mt-[22px] flex justify-center">
@@ -120,7 +120,7 @@ function PersonBlock({
           href={ig ? `https://instagram.com/${ig}` : undefined}
           target="_blank"
           rel="noopener noreferrer"
-          className={`inline-flex items-center gap-2 rounded-[33px] bg-black px-[35px] py-[10px] text-[34.9px] font-bold text-white ${ig ? "" : "pointer-events-none opacity-60"}`}
+          className={`inline-flex items-center gap-2 rounded-[33px] bg-black px-[35px] py-[18px] text-[40px] font-bold text-white ${ig ? "" : "pointer-events-none opacity-60"}`}
         >
           Instagram
         </a>
@@ -180,12 +180,12 @@ function StoryContent({ guestName }: { guestName: string }) {
       <div className="w-[1080px] px-[40px] pb-[60px] pt-[120px]" style={{ background: CYAN }}>
         <div className="flex flex-col gap-[120px]">
           <Card title="Save the Date">
-            <p className="text-[40px] font-semibold text-black">{event.dateLabel}</p>
+            <p className="text-[46px] font-semibold text-black">{event.dateLabel}</p>
             <div className="mt-[50px] flex justify-center gap-[24px]">
               {[["Hari", cd.d], ["Jam", cd.h], ["Menit", cd.m], ["Detik", cd.s]].map(([l, v]) => (
-                <div key={l as string} className="flex w-[150px] flex-col items-center rounded-[28px] bg-[#adfffe] py-[26px]">
-                  <span className="text-[56px] font-extrabold leading-none text-black">{String(v).padStart(2, "0")}</span>
-                  <span className="mt-[10px] text-[24px] font-semibold text-black/60">{l}</span>
+                <div key={l as string} className="flex w-[150px] flex-col items-center rounded-[28px] bg-[#adfffe] py-[36px]">
+                  <span className="text-[62px] font-extrabold leading-none text-black">{String(v).padStart(2, "0")}</span>
+                  <span className="mt-[10px] text-[32px] font-semibold text-black/60">{l}</span>
                 </div>
               ))}
             </div>
@@ -194,19 +194,19 @@ function StoryContent({ guestName }: { guestName: string }) {
           <Card title="Wedding Event">
             {[event.akad, event.resepsi].map((e) => (
               <div key={e.label} className="mb-[40px] rounded-[36px] border-2 border-black/10 py-[44px]">
-                <p className="text-[42px] font-bold text-black">{e.label}</p>
-                <p className="mt-[18px] text-[30px] text-black/75">{e.day} | {e.date}</p>
-                <p className="mt-[6px] text-[30px] text-black/75">{e.time}</p>
+                <p className="text-[50px] font-bold text-black">{e.label}</p>
+                <p className="mt-[18px] text-[39px] text-black/75">{e.day} | {e.date}</p>
+                <p className="mt-[6px] text-[39px] text-black/75">{e.time}</p>
               </div>
             ))}
             <div className="rounded-[36px] border-2 border-black/10 px-[40px] py-[44px]">
-              <p className="text-[34px] font-bold text-black">{event.location.name}</p>
-              <p className="mt-[16px] text-[27px] leading-relaxed text-black/70">{event.location.address}</p>
+              <p className="text-[44px] font-bold text-black">{event.location.name}</p>
+              <p className="mt-[16px] text-[36px] leading-relaxed text-black/70">{event.location.address}</p>
               <a
                 href={event.location.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-[30px] inline-flex rounded-full bg-black px-[46px] py-[20px] text-[30px] font-bold text-white"
+                className="mt-[30px] inline-flex rounded-full bg-black px-[46px] py-[28px] text-[39px] font-bold text-white"
               >
                 Buka Google Maps
               </a>
@@ -231,16 +231,16 @@ function StoryContent({ guestName }: { guestName: string }) {
       >
         <div className="flex flex-col gap-[120px]">
           <Card title={gift.heading}>
-            <p className="mx-auto max-w-[720px] text-[28px] leading-relaxed text-black/75">{gift.intro}</p>
+            <p className="mx-auto max-w-[720px] text-[37px] leading-relaxed text-black/75">{gift.intro}</p>
             <div className="mt-[50px] flex flex-col gap-[34px]">
               {gift.accounts.map((acc) => (
                 <div key={acc.number} className="rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
-                  <p className="text-[34px] font-extrabold uppercase tracking-wide text-black">{acc.bank}</p>
-                  <p className="mt-[16px] text-[44px] font-bold tracking-[0.08em] text-black">{acc.number}</p>
-                  <p className="mt-[8px] text-[28px] text-black/65">a.n {acc.holder}</p>
+                  <p className="text-[44px] font-extrabold uppercase tracking-wide text-black">{acc.bank}</p>
+                  <p className="mt-[16px] text-[54px] font-bold tracking-[0.08em] text-black">{acc.number}</p>
+                  <p className="mt-[8px] text-[37px] text-black/65">a.n {acc.holder}</p>
                   <button
                     onClick={() => copy(acc.number, acc.number)}
-                    className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[16px] text-[28px] font-bold text-black active:scale-[0.97]"
+                    className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[24px] text-[37px] font-bold text-black active:scale-[0.97]"
                   >
                     {copied === acc.number ? "Tersalin ✓" : "Salin Nomor"}
                   </button>
@@ -248,13 +248,13 @@ function StoryContent({ guestName }: { guestName: string }) {
               ))}
             </div>
             <div className="mt-[50px]">
-              <h3 className="text-[46px] font-extrabold text-black">{gift.shipping.heading}</h3>
+              <h3 className="text-[52px] font-extrabold text-black">{gift.shipping.heading}</h3>
               <div className="mt-[30px] rounded-[36px] border-2 border-black/10 px-[44px] py-[40px]">
-                <p className="text-[27px] leading-relaxed text-black/75">{gift.shipping.address}</p>
-                <p className="mt-[14px] text-[30px] font-bold text-black">{gift.shipping.recipient}</p>
+                <p className="text-[36px] leading-relaxed text-black/75">{gift.shipping.address}</p>
+                <p className="mt-[14px] text-[39px] font-bold text-black">{gift.shipping.recipient}</p>
                 <button
                   onClick={() => copy(`${gift.shipping.address} (${gift.shipping.recipient})`, "addr")}
-                  className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[16px] text-[28px] font-bold text-black active:scale-[0.97]"
+                  className="mt-[28px] inline-flex rounded-full border-2 border-black px-[40px] py-[24px] text-[37px] font-bold text-black active:scale-[0.97]"
                 >
                   {copied === "addr" ? "Tersalin ✓" : "Salin Alamat"}
                 </button>
@@ -327,24 +327,25 @@ function RsvpCard({ guestName }: { guestName: string }) {
     }
   }
 
-  const inputCls = "w-full rounded-[24px] border-2 border-black/15 bg-white px-[30px] py-[24px] text-[30px] text-black outline-none";
+  // py cukup besar supaya tinggi sentuh tetap >=44px setelah kanvas diskala
+  const inputCls = "w-full rounded-[24px] border-2 border-black/15 bg-white px-[32px] py-[38px] text-[39px] text-black outline-none";
 
   return (
     <Card title="RSVP">
       <form onSubmit={submit} className="flex flex-col gap-[30px] text-left">
         <div>
-          <label className="mb-[12px] block text-[26px] font-bold text-black/60">Nama*</label>
+          <label className="mb-[12px] block text-[34px] font-bold text-black/60">Nama*</label>
           <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Nama Anda" className={inputCls} />
         </div>
         <div>
-          <label className="mb-[12px] block text-[26px] font-bold text-black/60">Konfirmasi Kehadiran*</label>
+          <label className="mb-[12px] block text-[34px] font-bold text-black/60">Konfirmasi Kehadiran*</label>
           <div className="grid grid-cols-3 gap-[16px]">
             {(Object.keys(labels) as Wish["attendance"][]).map((k) => (
               <button
                 type="button"
                 key={k}
                 onClick={() => setAttendance(k)}
-                className={`rounded-[20px] border-2 py-[22px] text-[26px] font-bold ${attendance === k ? "border-black bg-black text-white" : "border-black/15 text-black/70"}`}
+                className={`rounded-[20px] border-2 py-[30px] text-[34px] font-bold ${attendance === k ? "border-black bg-black text-white" : "border-black/15 text-black/70"}`}
               >
                 {labels[k]}
               </button>
@@ -353,37 +354,37 @@ function RsvpCard({ guestName }: { guestName: string }) {
         </div>
         {need && (
           <div>
-            <label className="mb-[12px] block text-[26px] font-bold text-black/60">Jumlah Kehadiran*</label>
+            <label className="mb-[12px] block text-[34px] font-bold text-black/60">Jumlah Kehadiran*</label>
             <input type="number" inputMode="numeric" min={1} max={20} value={guests} onChange={(e) => setGuests(e.target.value)} required className={inputCls} />
           </div>
         )}
         <div>
-          <label className="mb-[12px] block text-[26px] font-bold text-black/60">Alamat Domisili</label>
+          <label className="mb-[12px] block text-[34px] font-bold text-black/60">Alamat Domisili</label>
           <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Kota / kecamatan (opsional)" className={inputCls} />
         </div>
         <div>
-          <label className="mb-[12px] block text-[26px] font-bold text-black/60">Ucapan &amp; Doa*</label>
+          <label className="mb-[12px] block text-[34px] font-bold text-black/60">Ucapan &amp; Doa*</label>
           <textarea value={message} onChange={(e) => setMessage(e.target.value)} required rows={3} placeholder="Tuliskan ucapan & doa terbaik Anda..." className={`${inputCls} resize-none`} />
         </div>
-        <button type="submit" disabled={status === "loading"} className="rounded-full bg-black py-[26px] text-[32px] font-bold text-white disabled:opacity-60">
+        <button type="submit" disabled={status === "loading"} className="rounded-full bg-black py-[36px] text-[42px] font-bold text-white disabled:opacity-60">
           {status === "loading" ? "Mengirim..." : status === "sent" ? "Terkirim, terima kasih!" : "Submit"}
         </button>
-        {status === "error" && <p className="text-center text-[24px] text-red-600">Gagal mengirim, coba lagi.</p>}
+        {status === "error" && <p className="text-center text-[32px] text-red-600">Gagal mengirim, coba lagi.</p>}
       </form>
 
       {wishes.length > 0 && (
         <div className="mt-[70px] text-left">
-          <h3 className="mb-[30px] text-center text-[46px] font-extrabold text-black">Best Wishes</h3>
+          <h3 className="mb-[30px] text-center text-[52px] font-extrabold text-black">Best Wishes</h3>
           <div className="flex max-h-[900px] flex-col gap-[24px] overflow-y-auto">
             {wishes.map((w) => (
               <div key={w.id} className="rounded-[28px] bg-[#eafcff] px-[36px] py-[28px]">
                 <div className="flex items-center justify-between gap-4">
-                  <span className="text-[30px] font-bold text-black">{w.name}</span>
-                  <span className="shrink-0 text-[22px] font-semibold text-black/45">
+                  <span className="text-[39px] font-bold text-black">{w.name}</span>
+                  <span className="shrink-0 text-[30px] font-semibold text-black/45">
                     {labels[w.attendance]}{w.guests ? ` · ${w.guests}` : ""}
                   </span>
                 </div>
-                <p className="mt-[10px] text-[28px] leading-relaxed text-black/70">{w.message}</p>
+                <p className="mt-[10px] text-[37px] leading-relaxed text-black/70">{w.message}</p>
               </div>
             ))}
           </div>
@@ -409,7 +410,7 @@ function StoryFooter() {
       }}
     >
       <div className="absolute inset-x-0 top-[220px] px-[90px] text-center font-sans text-white">
-        <p className="text-[30px] font-medium leading-relaxed text-white/85">{closing.text}</p>
+        <p className="text-[39px] font-medium leading-relaxed text-white/85">{closing.text}</p>
         <p className="mt-[40px] font-serif text-[64px] font-semibold text-white">{couple.pairName}</p>
       </div>
       <div className="absolute left-[-189px] top-[820px] size-[1466px]">{img("gapura.webp")}</div>
@@ -445,7 +446,10 @@ export default function InviteCanvas({
     <div className="mx-auto min-h-dvh w-full max-w-[480px] transition-opacity duration-500" style={{ opacity: fading ? 0 : 1, background: CYAN }}>
       {opened ? (
         <StoryScaler>
-          <div className="w-[1080px]">
+          {/* overflow-hidden: dekorasi Figma (atap, bata, semak) sengaja
+              melebihi 1080px; tanpa ini kanvas meluber ke samping dan
+              halaman bisa digeser horizontal. */}
+          <div className="w-[1080px] overflow-hidden">
             <StoryTop groomIg={groomIg} brideIg={brideIg} />
             <StoryContent guestName={guestName} />
             <StoryFooter />
@@ -477,14 +481,29 @@ function CoverScaler({ children, onOpen }: { children: React.ReactNode; onOpen: 
     };
   }, []);
   return (
-    <div ref={ref} className="relative flex h-dvh w-full items-center justify-center overflow-hidden bg-white">
+    // items-start: kalau kanvas lebih tinggi dari layar, yang terpangkas HANYA
+    // bagian bawah (bunga dekoratif). Kalau dipusatkan, judul di atas ikut
+    // terpotong di layar pendek.
+    <div ref={ref} className="relative flex h-dvh w-full items-start justify-center overflow-hidden bg-white">
       <div style={{ width: DESIGN_W * s, height: COVER_H * s, position: "relative", flexShrink: 0 }}>
         <div style={{ width: DESIGN_W, height: COVER_H, transformOrigin: "top left", transform: `scale(${s})`, position: "absolute", inset: 0 }}>
           {children}
         </div>
+        {/* Tombol Buka Undangan (Figma: 316,1623, 448x67). Tinggi/lebar diberi
+            batas minimum agar tetap nyaman disentuh di layar kecil — pada
+            skala 0.38 ukuran Figma cuma ~26px, di bawah ambang sentuh 44px.
+            Posisi dijaga tetap berpusat di titik desain yang sama. */}
         <button
           onClick={onOpen}
-          style={{ position: "absolute", left: 316 * s, top: 1623 * s, width: 448 * s, height: 67 * s, borderRadius: 9999, fontSize: 40 * s }}
+          style={{
+            position: "absolute",
+            left: 316 * s + (448 * s) / 2 - Math.max(448 * s, 220) / 2,
+            top: 1623 * s + (67 * s) / 2 - Math.max(67 * s, 46) / 2,
+            width: Math.max(448 * s, 220),
+            height: Math.max(67 * s, 46),
+            borderRadius: 9999,
+            fontSize: Math.max(40 * s, 15),
+          }}
           className="flex cursor-pointer items-center justify-center bg-black font-semibold text-white shadow-lg transition active:scale-[0.97]"
         >
           Buka Undangan

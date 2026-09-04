@@ -34,7 +34,10 @@ html {
 }
 
 body {
-  background: var(--color-cream);
+  /* Undangan dibatasi selebar ponsel (max-w-480) dan dipusatkan. Di layar
+     lebar, sisi kiri/kanan memakai coklat gelap (senada zona Lantau) supaya
+     kolom undangan terbaca sebagai bingkai yang disengaja. */
+  background: #241009;
   color: var(--color-ink);
   font-family: var(--font-body);
   overflow-x: hidden;
